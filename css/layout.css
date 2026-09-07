@@ -1,0 +1,224 @@
+.header {
+    min-height: 100vh;
+    width: 100%;
+    background-image: linear-gradient(rgba(0, 0, 0, 0.5), rgba(0, 0, 0, 0.6)), url('../images/neie.png');
+    background-attachment: fixed;
+    background-position: center center;
+    background-repeat: no-repeat;
+    background-size: cover;
+    position: relative;
+    display: flex;
+    flex-direction: column;
+    justify-content: space-between;
+}
+
+@media (max-width: 768px) {
+    .header {
+        background-attachment: scroll !important;
+        min-height: 70vh;
+    }
+}
+
+.sub-header {
+    min-height: 15vh;
+    width: 100%;
+    background: #000000;
+    position: relative;
+}
+
+.course {
+    width: 80%;
+    margin: auto;
+    text-align: center;
+    padding-top: 35px;
+    color: white;
+}
+
+.row {
+    margin: 2px 0; 
+    display: flex;
+    justify-content: space-between;
+}
+
+.campus {
+    width: 80%;
+    margin: auto;
+    text-align: center;
+    padding-top: 1px;
+    color: white;
+}
+
+.facilities {
+    width: 80%;
+    margin: auto;
+    text-align: center;
+    padding-top: 100px;
+    color: white;
+}
+
+.footer {
+    background-color: #000000; 
+    padding: 40px 20px;
+    text-align: center;
+    font-family: 'Poppins', sans-serif;
+}
+
+.about-us {
+    width: 80%;
+    margin: auto;
+    padding-top: 1px;
+    padding-bottom: 50px;
+    color: white;
+}
+
+.steps {
+    width: 100%;
+    margin: 1px auto 10px auto;
+}
+
+.step-row {
+    display: grid;
+    grid-template-columns: 1fr 2fr;
+    gap: 20px; 
+    align-items: center;
+    margin-bottom: 30px; 
+}
+
+.step-row.step-right {
+    grid-template-columns: 2fr 1fr;
+}
+
+@media (max-width: 768px) {
+    .step-row, .step-row.step-right {
+        grid-template-columns: 1fr;
+        text-align: center;
+        gap: 20px;
+    }
+    
+    .step-row.step-right .step-text {
+        order: 2;
+    }
+    .step-row.step-right .step-number {
+        order: 1;
+    }
+}
+
+.blog-content {
+    width: 80%;
+    margin: 0 auto; /* centers the entire section */
+    padding: 1px;
+    color: white;
+
+    display: flex;
+    justify-content: center; /* centers all children horizontally */
+}
+
+.blog-content .row {
+    width: 100%;
+    display: flex;
+    justify-content: center; /* centers the .blog div */
+}
+
+.blog-content .blog {
+    text-align: center; /* centers the content inside the blog block */
+}
+
+.comment-box form {
+    text-align: left; /* forces the button to stay left */
+}
+
+
+.location {
+    width: 80%;
+    margin: auto;
+    padding: 80px 0;
+}
+
+.layout-matrix-row {
+    align-items: flex-start !important;
+    gap: 15px;
+}
+
+.course-detail-section {
+    width: 80%;
+    margin: 50px auto;
+    font-family: 'Poppins', sans-serif;
+    color: #ffffff;
+    text-align: left;
+}
+
+.detail-split-grid {
+    display: grid;
+    grid-template-columns: 1.2fr 0.8fr;
+    gap: 40px;
+    align-items: flex-start;
+}
+
+@media (max-width: 850px) {
+    .detail-split-grid {
+        grid-template-columns: 1fr;
+        gap: 30px;
+    }
+}
+
+/* ==========================================
+   CALL TO ACTION BUTTON STYLING
+   ========================================== */
+
+.cta {
+    margin: 10px auto;
+    width: 80%;
+    background-image: linear-gradient(rgba(0, 0, 0, 0.7), rgba(0, 0, 0, 0.7)), url('../images/neie.png');
+    background-position: center;
+    background-size: cover;
+    border-radius: 10px;
+    text-align: center;
+    padding: 80px 20px;
+    display: flex;
+    flex-wrap: wrap;
+    justify-content: center;
+    align-items: center;
+    gap: 20px;
+    box-sizing: border-box;
+}
+
+.cta h1 {
+    color: #ffffff;
+    margin-bottom: 30px;
+    padding: 0;
+    width: 100%;
+}
+
+.cta .hero-btn {
+    display: inline-flex;
+    justify-content: center;
+    align-items: center;
+    width: 200px;
+    height: 48px;
+    color: #ffffff;
+    border: 1px solid #ffffff;
+    background: rgba(0, 0, 0, 0.4);
+    border-radius: 4px;
+    text-decoration: none;
+    font-weight: 600;
+    box-sizing: border-box;
+    transition: background 0.3s ease, color 0.3s ease;
+}
+
+.cta .hero-btn:hover {
+    background: #080808;
+    color: #fcf9f9;
+}
+
+@media (max-width: 700px) {
+    .cta {
+        flex-direction: column;
+        gap: 15px;
+        padding: 50px 20px;
+    }
+
+    .cta .hero-btn {
+        width: 80%;
+        max-width: 240px;
+    }
+}

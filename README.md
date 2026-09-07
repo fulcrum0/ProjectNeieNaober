@@ -1,6 +1,9 @@
-📘 Project Neie Naober — Volunteer Registration System
+Project Neie Naober: Volunteer Registration System
+
 A web application built for Neie Naober / VIP Tynaarlo to simplify volunteer data collection, validation, and export.
 
-📌 Overview
-Neie Naober currently uses Excel files to collect volunteer information from different organizations. 
+![Front Page](README/frontpage.png)
 
+Overview
+
+Neie Naober currently uses Excel files to collect volunteer information from different organizations.
