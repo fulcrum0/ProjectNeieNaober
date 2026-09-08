@@ -1,0 +1,76 @@
+/* ============================
+   DASHBOARD PAGE STYLING
+=============================== */
+
+.dashboard-wrapper {
+    width: 85%;
+    max-width: 900px;
+    margin: 60px auto;
+    background: #111111;
+    padding: 40px 50px;
+    border-radius: 8px;
+    color: #ffffff;
+    text-align: center;
+    box-shadow: 0 0 20px rgba(255, 255, 255, 0.08);
+}
+
+.dashboard-wrapper h1 {
+    font-size: 32px;
+    font-weight: 700;
+    margin-bottom: 20px;
+    color: #ffffff;
+}
+
+.dashboard-wrapper p {
+    font-size: 15px;
+    color: #cccccc;
+    margin-bottom: 35px;
+}
+
+.dashboard-actions {
+    display: flex;
+    justify-content: center;
+    gap: 20px;
+    flex-wrap: wrap;
+}
+
+.dashboard-actions .hero-btn {
+    display: inline-flex;
+    justify-content: center;
+    align-items: center;
+    padding: 12px 28px;
+    font-size: 14px;
+    border: 1px solid #ffffff;
+    background: transparent;
+    color: #ffffff;
+    border-radius: 4px;
+    text-decoration: none;
+    transition: 0.3s ease;
+}
+
+.dashboard-actions .hero-btn:hover {
+    background: #d94d3c;
+    border-color: #d94d3c;
+}
+
+/* Mobile */
+@media (max-width: 600px) {
+    .dashboard-wrapper {
+        padding: 30px 25px;
+    }
+
+    .dashboard-wrapper h1 {
+        font-size: 26px;
+    }
+
+    .dashboard-actions {
+        flex-direction: column;
+        gap: 15px;
+    }
+
+    .dashboard-actions .hero-btn {
+        width: 100%;
+        max-width: 260px;
+        margin: 0 auto;
+    }
+}

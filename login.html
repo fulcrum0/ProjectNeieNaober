@@ -1,0 +1,145 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Login | Neie Naober</title>
+
+    <!-- Your existing CSS files -->
+    <link rel="stylesheet" href="css/base.css">
+    <link rel="stylesheet" href="css/components.css">
+    <link rel="stylesheet" href="css/layout.css">
+    <link rel="stylesheet" href="css/typography.css">
+
+    <style>
+        /* Login Page Styling */
+        .login-wrapper {
+            width: 100%;
+            max-width: 420px;
+            margin: 80px auto;
+            background: #111;
+            padding: 30px;
+            border-radius: 8px;
+            color: #fff;
+        }
+
+        .login-wrapper h2 {
+            text-align: center;
+            margin-bottom: 25px;
+            font-size: 26px;
+            font-weight: 600;
+        }
+
+        .login-wrapper label {
+            display: block;
+            margin-bottom: 6px;
+            font-size: 14px;
+        }
+
+        .login-wrapper input,
+        .login-wrapper select {
+            width: 100%;
+            padding: 12px;
+            margin-bottom: 18px;
+            background: #222;
+            border: 1px solid #444;
+            color: #fff;
+            border-radius: 4px;
+        }
+
+        .login-wrapper button {
+            width: 100%;
+            padding: 12px;
+            background: red;
+            border: none;
+            color: #fff;
+            font-size: 15px;
+            cursor: pointer;
+            border-radius: 4px;
+        }
+
+        .login-wrapper button:hover {
+            background: #b30000;
+        }
+
+        .login-info {
+            margin-top: 20px;
+            font-size: 13px;
+            text-align: center;
+            color: #ccc;
+        }
+    </style>
+</head>
+
+<body>
+
+<section class="sub-header">
+    <nav class="logo">
+        <div class="nav-links">
+            <ul>
+                <li><a href="index.html">HOME</a></li>
+                <li><a href="over-ons.html">OVER ONS</a></li>
+                <li><a href="agenda.html">AGENDA</a></li>
+                <li><a href="nieuws.html">NIEUWS</a></li>
+                <li><a href="werken-bij.html">WERKEN BIJ</a></li>
+                <li><a href="login.html">LOGIN</a></li>
+                <li><a href="contact.html">CONTACT</a></li>
+            </ul>
+        </div>
+    </nav>
+</section>
+
+<!-- ============================
+     LOGIN FORM
+=============================== -->
+<div class="login-wrapper">
+    <h2>Inloggen</h2>
+
+    <form id="loginForm">
+        <label for="loginType">Login type</label>
+        <select id="loginType" required>
+            <option value="">-- Kies type login --</option>
+            <option value="organization">Organisatie Login</option>
+            <option value="vip">VIP Login</option>
+        </select>
+
+        <label for="username">Gebruikersnaam</label>
+        <input type="text" id="username" placeholder="Gebruikersnaam" required>
+
+        <label for="password">Wachtwoord</label>
+        <input type="password" id="password" placeholder="Wachtwoord" required>
+
+        <button type="submit">Inloggen</button>
+    </form>
+
+    <div class="login-info">
+        <p>Gebruik je organisatie- of VIP-account om toegang te krijgen tot vrijwilligersgegevens.</p>
+    </div>
+</div>
+
+<script>
+    document.getElementById("loginForm").addEventListener("submit", function(e) {
+        e.preventDefault();
+
+        const type = document.getElementById("loginType").value;
+
+        if (!type) {
+            alert("Selecteer een login type.");
+            return;
+        }
+
+        // FLOWCHART LOGIC
+        if (type === "organization") {
+            // ORGANIZATION → Its volunteers → Check/Edit → Export
+            window.location.href = "organization-dashboard.html";
+        }
+
+        if (type === "vip") {
+            // VIP → ALL volunteers → Check/Edit → Export
+            window.location.href = "vip-dashboard.html";
+        }
+    });
+</script>
+
+</body>
+</html>
