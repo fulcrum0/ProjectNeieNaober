@@ -575,3 +575,231 @@ nav img {
         gap: 10px;
     }
 }
+
+/* ============================
+   CONTACT PAGE NEW LAYOUT
+=============================== */
+
+.contact-wrapper {
+    width: 85%;
+    max-width: 1200px;
+    margin: 60px auto;
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 40px;
+}
+
+.contact-info-box {
+    background: #111111;
+    padding: 25px 30px;
+    border-radius: 6px;
+}
+
+.contact-info-box h2 {
+    font-size: 24px;
+    font-weight: 600;
+    margin-bottom: 15px;
+}
+
+.contact-info-box p {
+    font-size: 14px;
+    line-height: 1.5;
+    padding: 0;
+    margin-bottom: 20px;
+}
+
+.opinion-btn {
+    display: inline-block;
+    margin: 15px 0 25px 0;
+}
+
+.contact-info-list .info-item {
+    margin-bottom: 18px;
+}
+
+.contact-info-list h3 {
+    font-size: 14px;
+    margin-bottom: 4px;
+}
+
+.contact-info-list p {
+    font-size: 13px;
+    color: #cccccc;
+    padding: 0;
+}
+
+.contact-form-box {
+    background: #111111;
+    padding: 25px 30px;
+    border-radius: 6px;
+}
+
+.contact-form-box h2 {
+    font-size: 24px;
+    font-weight: 600;
+    margin-bottom: 20px;
+}
+
+.contact-form-box label {
+    font-size: 13px;
+    margin-bottom: 5px;
+    display: block;
+}
+
+.contact-form-box input,
+.contact-form-box textarea {
+    width: 100%;
+    padding: 10px;
+    margin-bottom: 15px;
+    background: #222222;
+    border: 1px solid #444444;
+    color: #ffffff;
+}
+
+@media (max-width: 850px) {
+    .contact-wrapper {
+        grid-template-columns: 1fr;
+    }
+}
+
+.contact-info-list .info-item {
+    display: flex;
+    align-items: center;      /* ensures icon + text align perfectly */
+    gap: 12px;
+    margin-bottom: 20px;
+}
+
+.info-icon {
+    width: 32px;
+    height: 32px;
+    background: #000000;
+    border-radius: 50%;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    padding: 6px;
+    flex-shrink: 0;
+}
+
+.info-text {
+    display: flex;
+    flex-direction: column;
+}
+
+.info-text h3,
+.info-text p {
+    text-align: left;         /* forces all text to align left */
+    margin: 0;
+    padding: 0;
+}
+
+/* ============================
+   CONTACT INFO ICONS
+=============================== */
+
+
+.info-icon img {
+    width: 100%;
+    height: 100%;
+    object-fit: contain;
+}
+
+.info-text h3 {
+    font-size: 14px;
+    margin: 0;
+    color: #ffffff;
+}
+
+.info-text p {
+    font-size: 13px;
+    color: #cccccc;
+    margin: 2px 0 0 0;
+    padding: 0;
+}
+
+.contact-info-list .info-item {
+    display: flex;
+    align-items: center;      /* ensures icon + text align perfectly */
+    gap: 12px;
+    margin-bottom: 20px;
+}
+
+.info-icon {
+    width: 32px;
+    height: 32px;
+    background: #000000;
+    border-radius: 50%;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    padding: 6px;
+    flex-shrink: 0;
+}
+
+.info-text {
+    display: flex;
+    flex-direction: column;
+}
+
+.info-text h3,
+.info-text p {
+    text-align: left;         /* forces all text to align left */
+    margin: 0;
+    padding: 0;
+}
+
+/* Fix misalignment: make all agenda cards equal height */
+.agenda-row {
+    display: flex;
+    gap: 20px;
+    justify-content: space-between;
+    align-items: stretch; /* <— THIS forces equal height */
+}
+
+/* Each card grows to match the tallest one */
+.agenda-card {
+    background: #000000;
+    padding: 20px;
+    color: #ffffff;
+    flex: 1;
+    display: flex;
+    flex-direction: column; /* allows button to stay at bottom */
+}
+
+/* Push the button to the bottom for perfect alignment */
+.agenda-card .hero-btn {
+    margin-top: auto; /* <— MAGIC: aligns all buttons */
+    padding: 8px 18px;
+    font-size: 13px;
+    border: 1px solid #ffffff;
+    background: transparent;
+    color: #ffffff;
+    display: inline-block;
+}
+
+/* Text fixes */
+.agenda-card h3 {
+    font-size: 16px;
+    font-weight: 600;
+    margin-bottom: 8px;
+    color: #ffffff;
+}
+
+.agenda-card p {
+    padding: 0;
+    margin: 3px 0;
+    font-size: 14px;
+    color: #ffffff;
+}
+
+.agenda-card p:nth-of-type(3) {
+    color: #cccccc;
+    margin-top: 8px;
+}
+
+/* Mobile stacking */
+@media (max-width: 768px) {
+    .agenda-row {
+        flex-direction: column;
+    }
+}
