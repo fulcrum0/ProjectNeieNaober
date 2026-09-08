@@ -36,8 +36,8 @@
             font-size: 14px;
         }
 
-        .login-wrapper input,
-        .login-wrapper select {
+        .login-wrapper input[type="text"],
+        .login-wrapper input[type="password"] {
             width: 100%;
             padding: 12px;
             margin-bottom: 18px;
@@ -45,9 +45,100 @@
             border: 1px solid #444;
             color: #fff;
             border-radius: 4px;
+            box-sizing: border-box;
         }
 
-        .login-wrapper button {
+        /* Radial Menu Styling */
+        .radial-wrapper {
+            position: relative;
+            width: 100%;
+            height: 130px;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            margin-bottom: 18px;
+        }
+
+        .radial-trigger {
+            width: 90px;
+            height: 90px;
+            border-radius: 50%;
+            background: #222;
+            border: 2px solid #444;
+            color: #fff;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 13px;
+            font-weight: 600;
+            cursor: pointer;
+            z-index: 2;
+            transition: all 0.3s ease;
+            text-align: center;
+            padding: 5px;
+            box-sizing: border-box;
+            user-select: none;
+        }
+
+        .radial-trigger:hover {
+            border-color: red;
+        }
+
+        .radial-options {
+            position: absolute;
+            width: 100%;
+            height: 100%;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            pointer-events: none;
+        }
+
+        .radial-options.active {
+            pointer-events: auto;
+        }
+
+        .radial-btn {
+            position: absolute;
+            width: 85px;
+            height: 85px;
+            border-radius: 50%;
+            background: #1a1a1a;
+            border: 2px solid #444;
+            color: #fff;
+            font-size: 12px;
+            font-weight: 600;
+            cursor: pointer;
+            opacity: 0;
+            transform: scale(0);
+            transition: all 0.3s ease;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            text-align: center;
+            padding: 5px;
+            box-sizing: border-box;
+        }
+
+        .radial-options.active .radial-btn {
+            opacity: 1;
+        }
+
+        .radial-options.active .radial-btn[data-value="organization"] {
+            transform: translateX(-95px) scale(1);
+        }
+
+        .radial-options.active .radial-btn[data-value="vip"] {
+            transform: translateX(95px) scale(1);
+        }
+
+        .radial-btn:hover,
+        .radial-btn.selected {
+            border-color: red;
+            background: #330000;
+        }
+
+        .login-wrapper button[type="submit"] {
             width: 100%;
             padding: 12px;
             background: red;
@@ -58,7 +149,7 @@
             border-radius: 4px;
         }
 
-        .login-wrapper button:hover {
+        .login-wrapper button[type="submit"]:hover {
             background: #b30000;
         }
 
@@ -96,12 +187,15 @@
     <h2>Inloggen</h2>
 
     <form id="loginForm">
-        <label for="loginType">Login type</label>
-        <select id="loginType" required>
-            <option value="">-- Kies type login --</option>
-            <option value="organization">Organisatie Login</option>
-            <option value="vip">VIP Login</option>
-        </select>
+        <label>Login type</label>
+        <div class="radial-wrapper">
+            <input type="hidden" id="loginType" name="loginType" required>
+            <div class="radial-trigger" id="radialTrigger">Kies type</div>
+            <div class="radial-options" id="radialOptions">
+                <button type="button" class="radial-btn" data-value="organization">Organisatie</button>
+                <button type="button" class="radial-btn" data-value="vip">VIP</button>
+            </div>
+        </div>
 
         <label for="username">Gebruikersnaam</label>
         <input type="text" id="username" placeholder="Gebruikersnaam" required>
@@ -118,24 +212,48 @@
 </div>
 
 <script>
+    const trigger = document.getElementById("radialTrigger");
+    const options = document.getElementById("radialOptions");
+    const buttons = document.querySelectorAll(".radial-btn");
+    const hiddenInput = document.getElementById("loginType");
+
+    trigger.addEventListener("click", function() {
+        options.classList.toggle("active");
+    });
+
+    buttons.forEach(function(btn) {
+        btn.addEventListener("click", function() {
+            const val = this.getAttribute("data-value");
+            hiddenInput.value = val;
+            trigger.textContent = this.textContent;
+            trigger.style.borderColor = "red";
+
+            buttons.forEach(function(b) {
+                b.classList.remove("selected");
+            });
+            this.classList.add("selected");
+
+            options.classList.remove("active");
+        });
+    });
+
     document.getElementById("loginForm").addEventListener("submit", function(e) {
         e.preventDefault();
 
-        const type = document.getElementById("loginType").value;
+        const type = hiddenInput.value;
 
         if (!type) {
             alert("Selecteer een login type.");
+            trigger.style.borderColor = "red";
             return;
         }
 
         // FLOWCHART LOGIC
         if (type === "organization") {
-            // ORGANIZATION → Its volunteers → Check/Edit → Export
             window.location.href = "organization-dashboard.html";
         }
 
         if (type === "vip") {
-            // VIP → ALL volunteers → Check/Edit → Export
             window.location.href = "vip-dashboard.html";
         }
     });
