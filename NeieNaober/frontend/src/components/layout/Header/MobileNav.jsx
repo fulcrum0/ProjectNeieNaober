@@ -13,7 +13,7 @@ function MobileNav() {
                     onClick={() => setIsOpen(!isOpen)}
                     aria-expanded={isOpen}
                 >
-                    ☰
+                    
                 </button>
             </div>
 

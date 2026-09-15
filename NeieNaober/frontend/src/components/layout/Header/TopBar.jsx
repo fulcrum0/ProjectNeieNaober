@@ -1,3 +1,5 @@
+import { Link } from "react-router-dom";
+
 function TopBar() {
     return (
         <div className="top">
@@ -24,13 +26,13 @@ function TopBar() {
 
                             <ul className="top-list align-right">
                                 <li>
-                                    <a
-                                        href="/klantportaal/"
+                                    <Link
+                                        to="/klantportaal"
                                         title="Inloggen op ons klantenportaal"
                                     >
                                         <i className="fa fa-solid fa-user-lock"></i>
                                         {" "}Inloggen klantportaal
-                                    </a>
+                                    </Link>
                                 </li>
                             </ul>
 

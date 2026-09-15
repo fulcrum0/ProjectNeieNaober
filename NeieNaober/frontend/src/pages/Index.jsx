@@ -6,8 +6,8 @@ function Index() {
     return (
         <>
             <Header />
-            <section class="header">
-                <div data-partial="image-carousel" data-ride="carousel" id="id-ed1453d0e74fa2d29939d76db9b65b51" class="carousel slide">
+            <section className="header">
+                <div data-partial="image-carousel" data-ride="carousel" id="id-ed1453d0e74fa2d29939d76db9b65b51" className="carousel slide">
                     <div class="carousel-inner">
                         <div class="carousel-item active">
                             <img class="img-fluid" src={image} alt="" width="1440" height="350" loading="eager" fetchpriority="high" />

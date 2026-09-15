@@ -1,3 +1,5 @@
+import { Link } from 'react-router-dom';
+
 import logo from '../../../assets/logo.svg'
 
 function DesktopNav() {
@@ -27,7 +29,7 @@ function DesktopNav() {
                             <ul className="navbar">
 
                                 <li className="nav-item">
-                                    <a className="nav-link active" href="/">
+                                    <Link className="nav-link active" to="/">
                                         <span className="nav-icon">
                                             <i className="fa fa-solid fa-house"></i>
                                         </span>
@@ -39,15 +41,15 @@ function DesktopNav() {
                                         <span className="nav-title">
                                             Home
                                         </span>
-                                    </a>
+                                    </Link>
                                 </li>
 
                                 <li className="nav-item">
-                                    <a className="nav-link" href="/over-ons/">
+                                    <Link className="nav-link" to="/over-ons">
                                         <span className="nav-title">
                                             Over ons
                                         </span>
-                                    </a>
+                                    </Link>
                                 </li>
 
                                 <li className="nav-item">
