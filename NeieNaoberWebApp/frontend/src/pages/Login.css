@@ -2,9 +2,103 @@
     min-height: 100dvh;
     display: flex;
     flex-direction: column;
+    background: #f6f4f9;
+    font-family: "Lato", sans-serif;
+    color: #232a4a;
 }
 
-.login-container {
+.page-layout .card {
+    width: 100%;
+    max-width: 520px;
+    margin: auto;
+    padding: 40px;
+    background: #fff;
+    border-radius: 16px;
+    box-shadow: 0 4px 24px rgba(0, 0, 0, 0.06);
+}
+
+.page-layout .card h1 {
+    margin: 0 0 16px;
+    font-size: 40px;
+    font-weight: 400;
+    color: #512a80;
+}
+
+.page-layout .card p {
+    margin: 0 0 24px;
+    font-size: 18px;
+    color: #555;
+}
+
+/* Tabs */
+.card .tabs {
+    display: flex;
+    gap: 4px;
+    padding: 8px;
+    margin-bottom: 28px;
+    background: #efe8f6;
+}
+
+.card .tab {
     flex: 1;
-    background-color: #F7F4F8;
+    padding: 14px;
+    border: 0;
+    border-radius: 8px;
+    background: transparent;
+    color: #555;
+    font: 700 17px "Lato", sans-serif;
+    cursor: pointer;
+}
+
+.card .tab.active {
+    background: #fff;
+    color: #512a80;
+}
+
+/* Form */
+.card label {
+    display: block;
+    margin-bottom: 8px;
+    font-size: 17px;
+    font-weight: 700;
+}
+
+.card input {
+    width: 100%;
+    box-sizing: border-box;
+    padding: 16px;
+    margin-bottom: 24px;
+    border: 1px solid #d9d4e3;
+    border-radius: 10px;
+    font: 400 18px "Lato", sans-serif;
+    color: #232a4a;
+}
+
+.card input:focus {
+    outline: 2px solid #512a80;
+    border-color: transparent;
+}
+
+.card .submit {
+    display: inline-flex;
+    align-items: center;
+    gap: 10px;
+    padding: 14px 22px;
+    border: 0;
+    border-radius: 10px;
+    background: #512a80;
+    color: #fff;
+    font: 700 18px "Lato", sans-serif;
+    cursor: pointer;
+}
+
+.card .submit:hover {
+    background: #42216a;
+}
+
+@media (max-width: 560px) {
+    .page-layout .card {
+        padding: 24px;
+        border-radius: 0;
+    }
 }
