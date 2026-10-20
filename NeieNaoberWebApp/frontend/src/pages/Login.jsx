@@ -4,16 +4,21 @@ import Footer from '../components/Footer';
 import './Login.css'
 
 import { useState } from 'react';
+import { useNavigate } from "react-router-dom";
 
 function Login() {
     const [type, setType] = useState('org');
+    const navigate = useNavigate();
 
-    /** 
-     * TODO: refactor this method when backend is complete.
-     * const handleSubmit = (e) => {
-            e.preventDefault();
-        };
-     */
+    // TODO: refactor this method when backend is complete.
+    const handleSubmit = (e) => {
+        e.preventDefault();
+        navigate('/dashboard', {
+            state: { email }
+        });
+    };
+    const [email, SetEmail] = useState("");
+
 
     return (
         <div className="page-layout">
@@ -31,9 +36,9 @@ function Login() {
                     </button>
                 </div>
 
-                <form>
+                <form onSubmit={handleSubmit}>
                     <label htmlFor="email">E-mailadred</label>
-                    <input id="email" type="email" required />
+                    <input id="email" type="email" required value={email} onChange={(e) => SetEmail(e.target.value)} />
 
                     <label htmlFor="password">Wachtwoord</label>
                     <input id="password" type="password" required />

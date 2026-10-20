@@ -6,12 +6,14 @@ import './index.css';
 import '@fortawesome/fontawesome-free/css/all.min.css';
 
 import Login from './pages/Login';
+import Dashboard from './pages/Dashboard'
 
 createRoot(document.getElementById('root')).render(
   <StrictMode>
     <BrowserRouter>
       <Routes>
         <Route path="/" element={<Login />} />
+        <Route path='/dashboard' element={<Dashboard />} />
       </Routes>
     </BrowserRouter>
   </StrictMode>
