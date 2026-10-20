@@ -23,27 +23,15 @@ function Login() {
                 <p>Log in met je account.</p>
 
                 <div className="tabs" role="tablist">
-                    <button
-                        type="button"
-                        className={`tab ${type === 'org' ? 'active' : ''}`}
-                        role="tab"
-                        aria-selected={type === 'org'}
-                        onClick={() => setType('org')}
-                    >
+                    <button type="button" className={`tab ${type === 'org' ? 'active' : ''}`} role="tab" aria-selected={type === 'org'} onClick={() => setType('org')} >
                         Organisatie
                     </button>
-                    <button
-                        type="button"
-                        className={`tab ${type === 'admin' ? 'active' : ''}`}
-                        role="tab"
-                        aria-selected={type === 'admin'}
-                        onClick={() => setType('admin')}
-                    >
+                    <button type="button" className={`tab ${type === 'admin' ? 'active' : ''}`} role="tab" aria-selected={type === 'admin'} onClick={() => setType('admin')}>
                         VIP! beheerder
                     </button>
                 </div>
 
-                <form onSubmit={handleSubmit}>
+                <form>
                     <label htmlFor="email">E-mailadred</label>
                     <input id="email" type="email" required />
 
@@ -51,7 +39,7 @@ function Login() {
                     <input id="password" type="password" required />
 
                     <button className="submit" type="submit">
-                        <i class="fa-solid fa-arrow-right-to-bracket"></i>
+                        <i class="fa-solid fa-arrow-right-to-bracket" />
                         Veilig inloggen
                     </button>
                 </form>
