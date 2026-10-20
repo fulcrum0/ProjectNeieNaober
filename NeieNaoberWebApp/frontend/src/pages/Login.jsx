@@ -8,9 +8,12 @@ import { useState } from 'react';
 function Login() {
     const [type, setType] = useState('org');
 
-    const handleSubmit = (e) => {
-        e.preventDefault();
-    };
+    /** 
+     * TODO: refactor this method when backend is complete.
+     * const handleSubmit = (e) => {
+            e.preventDefault();
+        };
+     */
 
     return (
         <div className="page-layout">
