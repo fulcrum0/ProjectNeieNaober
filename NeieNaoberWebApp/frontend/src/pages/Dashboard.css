@@ -1,0 +1,118 @@
+.dashboard-card {
+    flex: 1;
+    display: flex;
+    flex-direction: column;
+    width: 100%;
+    gap: 20px;
+}
+
+.title {
+    font-family: "ABeeZee", sans-serif;
+    font-size: 36px;
+    margin: 25px 0 0 50px;
+    color: #562583;
+    height: 10%;
+}
+
+.welcome-text {
+    font-size: 14px;
+    font-family: 'Lato', sans-serif;
+    color: #575756;
+    padding: 12px 0 0 12px;
+}
+
+.username-text {
+    color: #562583;
+    font-size: 34px;
+    padding-top: 25px;
+    padding-left: 25px;
+}
+
+.dashboard-info-cards {
+    width: 100%;
+    height: 50%;
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+    gap: 30px;
+}
+
+.dashboard-info-card {
+    width: 600px;
+    height: 125px;
+}
+
+.welcome-card {
+    border-radius: 20px 0 20px 0;
+    margin-left: 50px;
+    border: 1px solid #DED9E5;
+    background-color: white;
+}
+
+.app-info-cards {
+    width: 100%;
+    display: flex;
+    justify-content: space-around;
+    align-items: center;
+}
+
+.app-info-card {
+    border: 1px solid #DED9E5;
+    background-color: white;
+}
+
+.total-organizations-card {
+    width: 45%;
+    height: 100%;
+    border-radius: 20px 0 20px 0;
+}
+
+.total-volunteers-card {
+    width: 45%;
+    height: 100%;
+    border-radius: 0 20px 0 20px;
+}
+
+.info-title {
+    color: #575756;
+    font-family: "Lato", sans-serif;
+    font-size: 14px;
+    padding: 12px 0 0 12px;
+}
+
+.quantity {
+    color: #562583;
+    font-size: 52px;
+    font-family: "Atkinson Hyperlegible Next", sans-serif;
+    margin: 12px 0 0 12px;
+}
+
+.list-cards {
+    width: 100%;
+    height: 30%;
+    display: flex;
+    justify-content: space-around;
+    align-items: center;
+    gap: 15px;
+}
+
+.list-card {
+    border: none;
+    width: 200px;
+    height: 100px;
+    font-size: 12px;
+    color: #575756;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    border-radius: 24px;
+    background: #562583;
+    background: linear-gradient(180deg, rgba(86, 37, 131, .35) 0%, rgba(247, 244, 248, 1) 100%);
+    box-shadow: 0px 4px 4px 0px #575756;
+    cursor: pointer;
+}
+
+.list-card i {
+    font-size: 50px;
+    color: #562583;
+}

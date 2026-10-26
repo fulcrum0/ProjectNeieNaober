@@ -1,4 +1,4 @@
-.page-layout .card {
+.page-layout .login-card {
     width: 100%;
     max-width: 520px;
     margin: auto;
@@ -8,21 +8,21 @@
     box-shadow: 0 4px 24px rgba(0, 0, 0, 0.06);
 }
 
-.page-layout .card h1 {
+.page-layout .login-card h1 {
     margin: 0 0 16px;
     font-size: 40px;
     font-weight: 400;
     color: #512a80;
 }
 
-.page-layout .card p {
+.page-layout .login-card p {
     margin: 0 0 24px;
     font-size: 18px;
     color: #555;
 }
 
 /* Tabs */
-.card .tabs {
+.login-card .tabs {
     display: flex;
     gap: 4px;
     padding: 8px;
@@ -30,7 +30,7 @@
     background: #efe8f6;
 }
 
-.card .tab {
+.login-card .tab {
     flex: 1;
     padding: 14px;
     border: 0;
@@ -41,20 +41,20 @@
     cursor: pointer;
 }
 
-.card .tab.active {
+.login-card .tab.active {
     background: #fff;
     color: #512a80;
 }
 
 /* Form */
-.card label {
+.login-card label {
     display: block;
     margin-bottom: 8px;
     font-size: 17px;
     font-weight: 700;
 }
 
-.card input {
+.login-card input {
     width: 100%;
     box-sizing: border-box;
     padding: 16px;
@@ -65,12 +65,12 @@
     color: #232a4a;
 }
 
-.card input:focus {
+.login-card input:focus {
     outline: 2px solid #512a80;
     border-color: transparent;
 }
 
-.card .submit {
+.login-card .submit {
     display: inline-flex;
     align-items: center;
     gap: 10px;
@@ -83,12 +83,12 @@
     cursor: pointer;
 }
 
-.card .submit:hover {
+.login-card .submit:hover {
     background: #42216a;
 }
 
 @media (max-width: 560px) {
-    .page-layout .card {
+    .page-layout .login-card {
         padding: 24px;
         border-radius: 0;
     }

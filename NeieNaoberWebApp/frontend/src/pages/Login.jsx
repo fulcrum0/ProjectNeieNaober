@@ -1,49 +1,30 @@
 import Header from '../components/Header'
 import Footer from '../components/Footer';
+import useNavHandler from '../hooks/useNavHandler';
 
 import './Login.css'
 
 import { useState } from 'react';
-import { useNavigate } from "react-router-dom";
 
 function Login() {
-    const [type, setType] = useState('org');
-    const navigate = useNavigate();
 
-    // TODO: refactor this method when backend is complete.
-    const handleSubmit = (e) => {
-        e.preventDefault();
-        navigate('/dashboard', {
-            state: { email }
-        });
-    };
+    const handleNav = useNavHandler();
     const [email, SetEmail] = useState("");
-
 
     return (
         <div className="page-layout">
             <Header showAvatar={false} />
-            <main className="card">
+            <main className="login-card">
                 <h1>Welkom</h1>
                 <p>Log in met je account.</p>
-
-                <div className="tabs" role="tablist">
-                    <button type="button" className={`tab ${type === 'org' ? 'active' : ''}`} role="tab" aria-selected={type === 'org'} onClick={() => setType('org')} >
-                        Organisatie
-                    </button>
-                    <button type="button" className={`tab ${type === 'admin' ? 'active' : ''}`} role="tab" aria-selected={type === 'admin'} onClick={() => setType('admin')}>
-                        VIP! beheerder
-                    </button>
-                </div>
-
-                <form onSubmit={handleSubmit}>
+                <form>
                     <label htmlFor="email">E-mailadred</label>
                     <input id="email" type="email" required value={email} onChange={(e) => SetEmail(e.target.value)} />
 
                     <label htmlFor="password">Wachtwoord</label>
                     <input id="password" type="password" required />
 
-                    <button className="submit" type="submit">
+                    <button data-to="/dashboard" onClick={handleNav} className="submit" type="submit">
                         <i class="fa-solid fa-arrow-right-to-bracket" />
                         Veilig inloggen
                     </button>
