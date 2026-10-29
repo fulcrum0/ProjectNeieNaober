@@ -1,0 +1,152 @@
+.page-title {
+    font-size: 28px;
+    line-height: 32px;
+    margin-bottom: 12px;
+}
+
+.page-head {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    margin-bottom: 12px;
+}
+
+.page-head .page-title {
+    margin: 0;
+}
+
+.stats {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 12px;
+    margin-bottom: 12px;
+}
+
+.stats> :first-child {
+    grid-column: 1 / -1;
+    max-width: calc(50% - 8px);
+}
+
+.stats--org {
+    grid-template-columns: minmax(0, 1fr) 220px;
+    justify-content: space-between;
+}
+
+.stats--org> :first-child {
+    grid-column: auto;
+    max-width: none;
+}
+
+.stats--single {
+    grid-template-columns: 220px;
+}
+
+.stats--single> :first-child {
+    max-width: none;
+}
+
+.tiles {
+    display: flex;
+    justify-content: space-around;
+    padding: 40px 0;
+}
+
+.login-wrap {
+    display: flex;
+    justify-content: center;
+    padding-top: 8px;
+}
+
+.login-card {
+    display: flex;
+    flex-direction: column;
+    width: min(520px, 100%);
+    min-height: 0;
+    gap: 14px;
+    padding: 24px;
+    border-radius: 32px 0 0 0;
+}
+
+.login-card__title {
+    font-size: 26px;
+}
+
+.login-card .btn {
+    align-self: flex-start;
+}
+
+.privacy {
+    max-width: 870px;
+}
+
+.privacy__title {
+    margin-top: 24px;
+    margin-bottom: 8px;
+}
+
+.privacy__intro {
+    margin-bottom: 24px;
+}
+
+.policy-table>div {
+    display: grid;
+    grid-template-columns: 200px 1fr;
+    gap: 20px;
+    padding: 12px 0;
+    border-bottom: 1px solid var(--border);
+}
+
+.policy-table dt {
+    font-weight: 700;
+    font-size: 14px;
+}
+
+.policy-table dd {
+    margin: 0;
+    color: var(--muted);
+    font-size: 14px;
+}
+
+.policy-role {
+    background: var(--bg);
+    padding: 16px;
+}
+
+.policy-role p {
+    color: var(--muted);
+}
+
+.note {
+    display: flex;
+    flex-direction: column;
+    gap: 6px;
+    padding: 16px;
+}
+
+.note p {
+    color: var(--muted);
+    font-size: 14px;
+}
+
+.note--info {
+    background: var(--info-bg);
+    border-left: 3px solid var(--info);
+}
+
+.note--info strong {
+    color: var(--info);
+}
+
+.note--contact {
+    background: var(--purple-light);
+}
+
+.note--contact strong,
+.note--contact a {
+    color: var(--purple);
+}
+
+.note--contact a {
+    text-decoration: underline;
+    font-weight: 700;
+}
