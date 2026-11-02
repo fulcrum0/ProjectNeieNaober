@@ -1,0 +1,14 @@
+{
+    "name": "neienaober",
+    "private": true,
+    "description": "Eén plek om backend (Laravel) en frontend (React) samen te installeren, testen en starten",
+    "scripts": {
+        "setup": "node scripts/neienaober.mjs setup",
+        "check": "node scripts/neienaober.mjs check",
+        "dev": "node scripts/neienaober.mjs dev",
+        "reset": "node scripts/neienaober.mjs reset"
+    },
+    "engines": {
+        "node": ">=20"
+    }
+}
