@@ -1,91 +1,123 @@
 import { useState } from "react";
-import { Link } from "react-router-dom";
-import { ExternalLink, Lock, Send } from "lucide-react";
+import { Save } from "lucide-react";
 import TextField from "../ui/TextField";
+import SelectField from "../ui/SelectField";
 import Button from "../ui/Button";
 import FormSection from "../ui/FormSection";
-import { isEmail } from "../../helpers/validators";
+import Alert from "../ui/Alert";
 
-const empty = {
-    firstName: "", lastName: "", email: "", phone: "",
-    street: "", houseNumber: "", addition: "", postcode: "", birthDate: "",
-};
+// Alleen de velden die de gemeente nodig heeft (TO 6, AVG): geen telefoon, e-mail of geboortedatum
+const FIELDS = ["aanhef", "voornaam", "tussenvoegsel", "achternaam", "straat", "huisnummer", "postcode", "woonplaats"];
+const REQUIRED = ["voornaam", "achternaam", "straat", "huisnummer", "postcode", "woonplaats"];
 
-export default function VolunteerForm({ organisationName, onSubmit, onCancel }) {
-    const [form, setForm] = useState(empty);
-    const [consent, setConsent] = useState(false);
-    const [emailTouched, setEmailTouched] = useState(false);
+const empty = Object.fromEntries(FIELDS.map((f) => [f, ""]));
 
-    const set = (key) => (e) => setForm({ ...form, [key]: e.target.value });
-    const emailError =
-        emailTouched && !isEmail(form.email) ? "Vul een geldig e-mailadres in, bijvoorbeeld eva@example.nl." : "";
-    const valid = form.firstName.trim() && form.lastName.trim() && isEmail(form.email) && consent;
+const AANHEF_OPTIONS = [
+    { value: "", label: "Geen" },
+    { value: "dhr.", label: "dhr." },
+    { value: "mevr.", label: "mevr." },
+];
 
-    const handleSubmit = (e) => {
-        e.preventDefault();
-        if (valid) onSubmit(form);
+// Eerste controle in de browser voor snelle hulp; Laravel controleert altijd nog een keer (TO 6)
+function checkClientSide(form) {
+    const errors = {};
+    for (const field of REQUIRED) {
+        if (!String(form[field] || "").trim()) errors[field] = "Dit veld is verplicht.";
+    }
+    if (form.postcode && !/^[1-9][0-9]{3}\s?[A-Za-z]{2}$/.test(form.postcode.trim())) {
+        errors.postcode = "Vul een postcode in zoals 9481 AB.";
+    }
+    if (/^(dhr|mevr)\b/i.test(form.voornaam.trim())) {
+        errors.voornaam = "Zet dhr. of mevr. niet bij de voornaam. Kies de aanhef.";
+    }
+    if (form.huisnummer && !/^[1-9][0-9]*/.test(form.huisnummer.trim())) {
+        errors.huisnummer = "Vul een huisnummer in dat begint met een cijfer, zoals 12 of 12a.";
+    }
+    return errors;
+}
+
+export default function VolunteerForm({ initial, onSubmit, onCancel, submitLabel = "Opslaan", aside, disabled, externalKeys = [] }) {
+    const [form, setForm] = useState({ ...empty, ...pick(initial) });
+    const [errors, setErrors] = useState({});
+    const [general, setGeneral] = useState([]);
+    const [busy, setBusy] = useState(false);
+
+    const set = (key) => (e) => {
+        setForm({ ...form, [key]: e.target.value });
+        if (errors[key]) setErrors({ ...errors, [key]: "" });
     };
+
+    const handleSubmit = async (e) => {
+        e.preventDefault();
+        const clientErrors = checkClientSide(form);
+        setErrors(clientErrors);
+        setGeneral([]);
+        if (Object.keys(clientErrors).length) return;
+
+        setBusy(true);
+        try {
+            await onSubmit({ ...form, aanhef: form.aanhef || null, tussenvoegsel: form.tussenvoegsel || null });
+        } catch (error) {
+            // Meldingen per veld onder het veld; de rest (bijv. "al 3 keer aangemeld") bovenaan
+            const fieldErrors = {};
+            const other = [];
+            for (const [key, messages] of Object.entries(error.errors || {})) {
+                if (FIELDS.includes(key)) fieldErrors[key] = messages[0];
+                else if (!externalKeys.includes(key)) other.push(messages[0]);
+            }
+            setErrors(fieldErrors);
+            // Geen meldingen per veld (bijv. geen internet of 500)? Dan de algemene melding tonen
+            setGeneral(Object.keys(error.errors || {}).length ? other : [error.message]);
+        } finally {
+            setBusy(false);
+        }
+    };
+
+    const field = (id, label, props = {}) => (
+        <TextField id={id} label={label} required={REQUIRED.includes(id)} value={form[id]} onChange={set(id)} error={errors[id]} {...props} />
+    );
 
     return (
         <form onSubmit={handleSubmit} noValidate>
-            <div className="form-grid">
-                <FormSection title="1. Gegevens van de vrijwilliger">
+            <div className={aside ? "form-grid" : ""}>
+                <FormSection title="Gegevens van de vrijwilliger">
                     <div className="form-row">
-                        <TextField id="firstName" label="Voornaam" required value={form.firstName} onChange={set("firstName")} />
-                        <TextField id="lastName" label="Achternaam" required value={form.lastName} onChange={set("lastName")} />
+                        <SelectField id="aanhef" label="Aanhef" value={form.aanhef} onChange={set("aanhef")} options={AANHEF_OPTIONS} error={errors.aanhef} />
+                        {field("tussenvoegsel", "Tussenvoegsel", { placeholder: "bijv. van der" })}
                     </div>
-                    <TextField
-                        id="email" label="E-mailadres" type="email" required
-                        value={form.email} onChange={set("email")}
-                        onBlur={() => setEmailTouched(true)} error={emailError}
-                    />
-                    <TextField
-                        id="birthDate" label="Geboortedatum" type="date"
-                        max={new Date().toISOString().slice(0, 10)}
-                        value={form.birthDate} onChange={set("birthDate")}
-                    />
-                    <TextField id="phone" label="Telefoonnummer" value={form.phone} onChange={set("phone")} />
-                    <TextField id="street" label="Straatnaam" value={form.street} onChange={set("street")} />
                     <div className="form-row">
-                        <TextField id="houseNumber" label="Huisnummer" value={form.houseNumber} onChange={set("houseNumber")} />
-                        <TextField id="addition" label="Toevoeging" value={form.addition} onChange={set("addition")} />
+                        {field("voornaam", "Voornaam", { autoComplete: "off" })}
+                        {field("achternaam", "Achternaam", { autoComplete: "off" })}
                     </div>
-                    <TextField id="postcode" label="Postcode" value={form.postcode} onChange={set("postcode")} />
+                    {field("straat", "Straat")}
+                    <div className="form-row">
+                        {field("huisnummer", "Huisnummer", { placeholder: "bijv. 12a" })}
+                        {field("postcode", "Postcode", { placeholder: "bijv. 9481 AB" })}
+                    </div>
+                    {field("woonplaats", "Woonplaats")}
                 </FormSection>
-
-                <FormSection title="2. Organisatie en privacy">
-                    <TextField id="org" label="Organisatie" value={organisationName} readOnly disabled />
-                    <h3 className="form-section__subtitle">Privacyvoorwaarden en organisatieverantwoordelijkheid *</h3>
-                    <p className="muted">
-                        VIP! Tynaarlo verwerkt deze gegevens voor vrijwilligersregistratie, controle en contact. Alleen bevoegde
-                        medewerkers krijgen toegang. De organisatie is verantwoordelijk voor het verkrijgen van toestemming van de
-                        vrijwilliger voordat de gegevens worden ingediend. Goedgekeurde registraties kunnen in de jaarlijst voor de
-                        gemeente worden opgenomen.
-                    </p>
-                    <p className="muted small">
-                        De organisatie moet vooraf toestemming van de vrijwilliger verkrijgen. De privacyverklaring beschrijft de
-                        verwerking, rechten en verantwoordelijkheden.
-                    </p>
-                    <Link to="/privacy" target="_blank" className="ext-link">
-                        Lees de openbare privacyverklaring en registratievoorwaarden <ExternalLink size={14} />
-                    </Link>
-                    <label className="consent">
-                        <input type="checkbox" checked={consent} onChange={(e) => setConsent(e.target.checked)} />
-                        <span>
-                            Ik bevestig namens de organisatie dat toestemming van de vrijwilliger is verkregen en ik accepteer de
-                            privacyvoorwaarden en de verantwoordelijkheid van de organisatie voor deze registratie. *
-                        </span>
-                    </label>
-                </FormSection>
+                {aside}
             </div>
 
+            {general.length > 0 && (
+                <Alert type="error" title="Niet opgeslagen">
+                    {general.map((m) => (
+                        <p key={m}>{m}</p>
+                    ))}
+                </Alert>
+            )}
+
             <div className="form-actions">
-                <Button type="button" variant="outline" onClick={onCancel}>Terug naar overzicht</Button>
-                <div className="form-actions__right">
-                    {!valid && <Lock size={20} />}
-                    <Button type="submit" icon={Send} disabled={!valid}>Registratie versturen</Button>
-                </div>
+                {onCancel ? <Button type="button" variant="outline" onClick={onCancel}>Annuleren</Button> : <span />}
+                <Button type="submit" icon={Save} disabled={busy || disabled}>
+                    {busy ? "Bezig..." : submitLabel}
+                </Button>
             </div>
         </form>
     );
+}
+
+function pick(initial) {
+    if (!initial) return {};
+    return Object.fromEntries(FIELDS.map((f) => [f, initial[f] ?? ""]));
 }

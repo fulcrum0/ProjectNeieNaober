@@ -1,0 +1,250 @@
+/* Toegevoegd bij het koppelen aan de API: statussen, meldingen, filters en paginering.
+   Apart bestand, zodat de basisstijl van het team niet verandert. */
+
+.header__nav a:not(.active) {
+    border-bottom-color: transparent;
+}
+
+.header__nav {
+    flex-wrap: wrap;
+}
+
+.table-toolbar {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    flex-wrap: wrap;
+}
+
+.table-toolbar__actions {
+    display: flex;
+    align-items: center;
+}
+
+.search {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    padding: 0 12px;
+    border: 1px solid var(--border);
+    border-radius: var(--radius);
+    background: #fff;
+    color: var(--muted);
+}
+
+.search input {
+    flex: 1;
+    height: 100%;
+    border: 0;
+    font: inherit;
+    outline: none;
+    background: transparent;
+}
+
+.filters {
+    display: flex;
+    flex-wrap: wrap;
+    align-items: flex-end;
+    gap: 12px;
+    margin-bottom: 12px;
+}
+
+.filters .field {
+    min-width: 180px;
+}
+
+.check {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    height: 38px;
+    font-weight: 700;
+    font-size: 14px;
+}
+
+.field select {
+    height: 38px;
+    padding: 0 10px;
+    border: 1px solid var(--border);
+    border-radius: var(--radius);
+    font: inherit;
+    background: #fff;
+}
+
+.field--error select {
+    border: 2px solid var(--danger);
+}
+
+.badge {
+    display: inline-block;
+    padding: 2px 10px;
+    border-radius: 999px;
+    font-size: 13px;
+    font-weight: 700;
+    white-space: nowrap;
+}
+
+.badge--concept {
+    background: #ececf1;
+    color: var(--muted);
+}
+
+.badge--nieuw {
+    background: var(--info-bg);
+    color: var(--info);
+}
+
+.badge--goedgekeurd {
+    background: #e5f4ea;
+    color: #1e6b3a;
+}
+
+.badge--afgekeurd {
+    background: var(--danger-bg);
+    color: var(--danger);
+}
+
+.badge--dubbel {
+    background: #fff3d6;
+    color: #7a5200;
+}
+
+.badge--actief {
+    background: #e5f4ea;
+    color: #1e6b3a;
+}
+
+.alert {
+    display: flex;
+    flex-direction: column;
+    gap: 4px;
+    padding: 12px 16px;
+    margin-bottom: 12px;
+    border-left: 4px solid var(--info);
+    background: var(--info-bg);
+    font-size: 15px;
+}
+
+.alert--success {
+    border-color: #1e6b3a;
+    background: #e5f4ea;
+}
+
+.alert--error {
+    border-color: var(--danger);
+    background: var(--danger-bg);
+}
+
+.alert--warning {
+    border-color: #b07a00;
+    background: #fff3d6;
+}
+
+.alert ul {
+    margin: 4px 0 0;
+    padding-left: 20px;
+}
+
+.pagination {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    flex-wrap: wrap;
+    gap: 12px;
+}
+
+.pagination__buttons {
+    display: flex;
+    align-items: center;
+    gap: 12px;
+}
+
+.actions {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 8px;
+    margin: 12px 0;
+}
+
+.page-head__actions {
+    display: flex;
+    gap: 8px;
+    flex-wrap: wrap;
+}
+
+.stats--vip {
+    grid-template-columns: repeat(4, minmax(0, 1fr));
+}
+
+.stats--vip > :first-child {
+    grid-column: 1 / -1;
+    max-width: none;
+}
+
+.stats--org3 {
+    grid-template-columns: minmax(0, 1fr) 200px 200px;
+}
+
+.stats--org3 > :first-child {
+    grid-column: auto;
+    max-width: none;
+}
+
+.tiles {
+    flex-wrap: wrap;
+    gap: 24px;
+}
+
+.table .empty {
+    text-align: center;
+    color: var(--muted);
+}
+
+.mapping {
+    display: grid;
+    grid-template-columns: repeat(auto-fill, minmax(220px, 1fr));
+    gap: 12px;
+}
+
+.inline-form {
+    display: flex;
+    flex-wrap: wrap;
+    align-items: flex-end;
+    gap: 12px;
+}
+
+.inline-form .field {
+    min-width: 200px;
+}
+
+.public-links {
+    display: flex;
+    flex-direction: column;
+    gap: 6px;
+    width: min(520px, 100%);
+    margin: 16px auto 0;
+}
+
+.public-links a {
+    color: var(--purple);
+    font-weight: 700;
+}
+
+.narrow {
+    max-width: 640px;
+}
+
+.result {
+    font: 700 20px var(--font-head);
+}
+
+.loading {
+    padding: 24px 0;
+}
+
+@media (max-width: 1000px) {
+    .stats--vip,
+    .stats--org3 {
+        grid-template-columns: 1fr 1fr;
+    }
+}

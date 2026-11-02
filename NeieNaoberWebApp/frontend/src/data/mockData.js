@@ -1,9 +1,9 @@
 import { ROLES } from "./constants";
 
 export const users = [
-    { id: "u1", email: "lorem@vip.tynaarlo.nl", password: "password123", name: "VIP TYNAARLO", initials: "VT", role: ROLES.ADMIN },
-    { id: "u2", email: "a@organisatie.nl", password: "password123", name: "Organisatie A", initials: "O", role: ROLES.ORG, orgId: "o1" },
-    { id: "u3", email: "b@organisatie.nl", password: "password123", name: "Organisatie B", initials: "O", role: ROLES.ORG, orgId: "o2" },
+    { id: "u1", email: "lorem@vip.tynaarlo.nl", password: "Wachtwoord1234", name: "VIP TYNAARLO", initials: "VT", role: ROLES.ADMIN },
+    { id: "u2", email: "a@organisatie.nl", password: "Wachtwoord1234", name: "Organisatie A", initials: "O", role: ROLES.ORG, orgId: "o1" },
+    { id: "u3", email: "b@organisatie.nl", password: "Wachtwoord1234", name: "Organisatie B", initials: "O", role: ROLES.ORG, orgId: "o2" },
 ];
 
 export const organisations = [
