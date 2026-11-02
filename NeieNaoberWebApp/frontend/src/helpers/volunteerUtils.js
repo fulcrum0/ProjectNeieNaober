@@ -1,13 +1,6 @@
-export const fullName = (v) => `${v.firstName} ${v.lastName}`;
+// Werken met de vrijwilliger zoals de API hem stuurt (Nederlandse veldnamen, TO 4)
+export const fullName = (v) => [v?.voornaam, v?.tussenvoegsel, v?.achternaam].filter(Boolean).join(" ");
 
-export const formatAddress = (v) =>
-    `${v.street} ${v.houseNumber}${v.addition || ""} ${v.postcode}`.trim();
+export const formatPostcode = (postcode) => (postcode && postcode.length === 6 ? `${postcode.slice(0, 4)} ${postcode.slice(4)}` : postcode || "");
 
-export function calcAge(iso) {
-    const b = new Date(iso);
-    const n = new Date();
-    let age = n.getFullYear() - b.getFullYear();
-    const m = n.getMonth() - b.getMonth();
-    if (m < 0 || (m === 0 && n.getDate() < b.getDate())) age--;
-    return age;
-}
+export const formatAddress = (v) => (v ? `${v.straat} ${v.huisnummer}, ${formatPostcode(v.postcode)} ${v.woonplaats}`.trim() : "");
