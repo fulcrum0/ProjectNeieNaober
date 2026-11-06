@@ -1,5 +1,5 @@
 import { spawn, spawnSync } from 'node:child_process';
-import { copyFileSync, existsSync, readFileSync, writeFileSync } from 'node:fs';
+import { copyFileSync, existsSync, readFileSync, statSync, writeFileSync } from 'node:fs';
 import { dirname, join } from 'node:path';
 import { fileURLToPath } from 'node:url';
 
@@ -40,7 +40,10 @@ function Stop(tekst, hint)
 
 function Draai(commando, args, map, { stil = true } = {})
 {
-    const resultaat = spawnSync(commando, args, { cwd: map, encoding: 'utf8', stdio: stil ? 'pipe' : 'inherit', shell: process.platform === 'win32' });
+    // Op Windows zijn npm en composer .cmd/.bat-bestanden en hebben ze een shell nodig.
+    // php.exe niet: via de shell worden argumenten niet gequote en breekt `php -r "..."`.
+    const shell = process.platform === 'win32' && commando !== 'php';
+    const resultaat = spawnSync(commando, args, { cwd: map, encoding: 'utf8', stdio: stil ? 'pipe' : 'inherit', shell });
 
     if (resultaat.error)
     {
@@ -172,7 +175,12 @@ function SetupFrontend()
         return;
     }
 
-    if (!existsSync(join(FRONTEND, 'node_modules', '.package-lock.json')))
+    const geinstalleerd = join(FRONTEND, 'node_modules', '.package-lock.json');
+    const verouderd = existsSync(geinstalleerd) && ['package.json', 'package-lock.json']
+        .map((bestand) => join(FRONTEND, bestand))
+        .some((bestand) => existsSync(bestand) && statSync(bestand).mtimeMs > statSync(geinstalleerd).mtimeMs);
+
+    if (!existsSync(geinstalleerd) || verouderd)
     {
         console.log(`  ${KLEUR.grijs}npm install... (eerste keer duurt dit even)${KLEUR.uit}`);
         DraaiOfStop('npm install', 'npm', ['install', '--no-audit', '--no-fund'], FRONTEND);
