@@ -1,6 +1,5 @@
 <?php
 
-// Meldingen in gewone taal (FE-3). Geen technische woorden, want veel gebruikers zijn ouder.
 return [
     'accepted' => 'Zet het vinkje bij :attribute aan.',
     'after' => ':Attribute moet na :date liggen.',

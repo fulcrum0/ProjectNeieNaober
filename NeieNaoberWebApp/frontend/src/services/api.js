@@ -1,8 +1,5 @@
-// Alle verzoeken naar de Laravel-API. Stuurt de sessie-cookie en het XSRF-token mee.
-
 let onUnauthorized = () => {};
 
-// AuthContext zet hier een functie neer: bij 401 is de sessie weg en moet de gebruiker opnieuw inloggen
 export const setUnauthorizedHandler = (handler) => {
     onUnauthorized = handler;
 };
@@ -20,7 +17,6 @@ const readCookie = (name) => {
     return match ? decodeURIComponent(match[1]) : null;
 };
 
-// Laravel weigert elke POST/DELETE zonder XSRF-token; dat token staat in een cookie
 async function ensureCsrfCookie(force = false) {
     if (force || !readCookie("XSRF-TOKEN")) await fetch("/sanctum/csrf-cookie", { credentials: "same-origin" });
 }
@@ -40,7 +36,6 @@ async function request(method, path, body, retry = true) {
         throw new ApiError(0);
     }
 
-    // 419: token verlopen. Eén keer een nieuw token halen en opnieuw proberen
     if (response.status === 419 && retry) {
         await ensureCsrfCookie(true);
         return request(method, path, body, false);

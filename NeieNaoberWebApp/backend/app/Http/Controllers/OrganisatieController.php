@@ -11,7 +11,6 @@ use Illuminate\Support\Facades\Validator;
 
 class OrganisatieController extends Controller
 {
-    // Beheerder: alle organisaties. Organisatie: alleen zichzelf (voor haar naam op het formulier).
     public function index(Request $request): AnonymousResourceCollection
     {
         $gebruiker = $request->user();
@@ -24,7 +23,6 @@ class OrganisatieController extends Controller
         return OrganisatieResource::collection($organisaties);
     }
 
-    // Excel-import: rijen zonder naam of met een naam die al bestaat worden overgeslagen
     public function import(Request $request): AnonymousResourceCollection
     {
         $request->validate(['organisations' => ['required', 'array']]);
@@ -59,7 +57,6 @@ class OrganisatieController extends Controller
         return OrganisatieResource::collection($nieuw);
     }
 
-    // Verwijdert ook het account en de vrijwilligers van de organisatie (CASCADE)
     public function destroy(Request $request): Response
     {
         $request->validate(['ids' => ['required', 'array'], 'ids.*' => ['integer']]);

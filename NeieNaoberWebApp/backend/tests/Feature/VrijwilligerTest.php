@@ -11,7 +11,6 @@ class VrijwilligerTest extends TestCase
 {
     use RefreshDatabase;
 
-    // Precies wat VolunteerForm.jsx uit v1.0 opstuurt
     private function Formulier(array $anders = []): array
     {
         return array_merge([
@@ -85,7 +84,6 @@ class VrijwilligerTest extends TestCase
             ->assertJsonPath('errors.email.0', 'Vul een e-mailadres of telefoonnummer in.')
             ->assertJsonPath('errors.phone.0', 'Vul een e-mailadres of telefoonnummer in.');
 
-        // Alleen een naam en een telefoonnummer is genoeg
         $this->postJson('/api/volunteers', [
             'firstName' => 'Piet', 'lastName' => 'Bakker', 'phone' => '06 1234 5678',
             'email' => '', 'birthDate' => '', 'street' => '', 'houseNumber' => '', 'addition' => '', 'postcode' => '',
@@ -149,7 +147,6 @@ class VrijwilligerTest extends TestCase
         $organisatie = Organisatie::factory()->create();
 
         $this->actingAs($this->Beheerder())->postJson('/api/volunteers/import', ['volunteers' => [
-            // Excel geeft getallen soms als getal in plaats van tekst
             ['orgId' => (string) $organisatie->id, 'firstName' => 'Piet', 'lastName' => '', 'email' => '', 'houseNumber' => '7', 'phone' => 612345678],
             ['orgId' => (string) $organisatie->id, 'firstName' => ''],
             ['orgId' => '999', 'firstName' => 'Onbekend'],

@@ -10,7 +10,6 @@ return new class extends Migration
     {
         Schema::table('vrijwilligers', function (Blueprint $table)
         {
-            // "van der" in "Jan van der Berg", los van de achternaam
             $table->string('tussenvoegsel', 20)->nullable()->after('voornaam');
         });
     }

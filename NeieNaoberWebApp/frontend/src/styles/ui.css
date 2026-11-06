@@ -117,7 +117,6 @@
     color: var(--purple);
 }
 
-/* 3: aantallen op het dashboard zijn knoppen die een lijst openklappen */
 .stat-card--button {
     font: inherit;
     text-align: left;
@@ -331,7 +330,6 @@
     text-decoration: underline;
 }
 
-/* Status van een vrijwilliger: concept of verstuurd naar VIP! */
 .badge {
     display: inline-block;
     padding: 2px 10px;

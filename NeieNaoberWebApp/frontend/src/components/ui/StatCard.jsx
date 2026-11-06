@@ -1,6 +1,5 @@
 import { ChevronDown } from "lucide-react";
 
-// Met onClick wordt de kaart een knop die een lijst open- en dichtklapt
 export default function StatCard({ label, value, large = false, onClick, expanded }) {
     const content = (
         <>

@@ -1,10 +1,3 @@
-// Eén commando voor het hele project, zodat iedereen het op dezelfde manier doet:
-//   npm run setup  -> alles installeren en de database klaarzetten
-//   npm run check  -> setup + alle tests + de API echt aanroepen + frontend bouwen
-//   npm run dev    -> backend (Laravel) en frontend (Vite) samen starten
-//   npm run reset  -> database leeg en opnieuw vullen met nep-testgegevens
-// Geen extra npm-pakketten nodig: alleen Node, PHP en Composer.
-
 import { spawn, spawnSync } from 'node:child_process';
 import { copyFileSync, existsSync, readFileSync, writeFileSync } from 'node:fs';
 import { dirname, join } from 'node:path';
@@ -45,7 +38,6 @@ function Stop(tekst, hint)
     process.exit(1);
 }
 
-// Toont de uitvoer alleen als het misgaat, zodat het scherm rustig blijft
 function Draai(commando, args, map, { stil = true } = {})
 {
     const resultaat = spawnSync(commando, args, { cwd: map, encoding: 'utf8', stdio: stil ? 'pipe' : 'inherit', shell: process.platform === 'win32' });
@@ -143,7 +135,6 @@ function SetupBackend()
 
     if (!existsSync(join(BACKEND, '.env')))
     {
-        // Zonder instellingen werkt het meteen met SQLite (één bestand). Wil je MySQL? Pas dan .env aan.
         copyFileSync(join(BACKEND, '.env.example'), join(BACKEND, '.env'));
         SchrijfEnvWaarde('DB_CONNECTION', 'sqlite');
         SchrijfEnvWaarde('DB_DATABASE', join(BACKEND, 'database', 'database.sqlite'));
@@ -154,7 +145,6 @@ function SetupBackend()
         Goed(`.env gevonden (database: ${LeesEnv().match(/^DB_CONNECTION=(.*)$/m)?.[1] ?? '?'})`);
     }
 
-    // SQLite: het databasebestand moet bestaan voordat Laravel het kan vullen
     if (/^DB_CONNECTION=sqlite$/m.test(LeesEnv()))
     {
         const bestand = LeesEnv().match(/^DB_DATABASE=(.+)$/m)?.[1]?.trim() || join(BACKEND, 'database', 'database.sqlite');
@@ -166,7 +156,6 @@ function SetupBackend()
         DraaiOfStop('APP_KEY gemaakt', 'php', ['artisan', 'key:generate', '--force'], BACKEND);
     }
 
-    // Alleen vullen als de database nog leeg is, anders komen de testgegevens er dubbel in
     const leeg = Draai('php', ['artisan', 'migrate:status'], BACKEND).uitvoer.includes('Migration table not found');
     DraaiOfStop(leeg ? 'Database gemaakt (migraties + testgegevens)' : 'Database bijgewerkt (migraties)', 'php', ['artisan', 'migrate', '--force', ...(leeg ? ['--seed'] : [])], BACKEND,
         'Klopt de database in .env? Bij MySQL: bestaat de database "neienaober" en draait MySQL?');
@@ -183,7 +172,6 @@ function SetupFrontend()
         return;
     }
 
-    // npm schrijft dit bestand pas als de installatie helemaal gelukt is
     if (!existsSync(join(FRONTEND, 'node_modules', '.package-lock.json')))
     {
         console.log(`  ${KLEUR.grijs}npm install... (eerste keer duurt dit even)${KLEUR.uit}`);
@@ -218,7 +206,6 @@ async function WachtOpServer(basis)
         }
         catch
         {
-            // Server is nog aan het opstarten
         }
 
         await Wacht(250);
@@ -227,7 +214,6 @@ async function WachtOpServer(basis)
     return false;
 }
 
-// Een mini-browser: bewaart cookies en stuurt het XSRF-token mee, net als React straks doet (TO 3.5)
 class Browser
 {
     constructor(basis)
@@ -299,7 +285,6 @@ async function Verwacht(omschrijving, belofte, controle)
     }
 }
 
-// De echte API aanroepen via HTTP, zoals de React-app het straks doet
 async function RookTest()
 {
     Kop('API echt aanroepen (zoals de browser)');
@@ -378,7 +363,6 @@ async function Check()
     SetupFrontend();
 
     Kop('Automatische tests (backend)');
-    // Direct via PHPUnit: werkt ook als de dev-pakketten voor "artisan test" ontbreken
     const test = Draai('php', ['vendor/bin/phpunit', '--colors=never'], BACKEND);
     const regel = test.uitvoer.split('\n').find((r) => /^(OK \(|Tests:)/.test(r.trim()))?.trim();
 

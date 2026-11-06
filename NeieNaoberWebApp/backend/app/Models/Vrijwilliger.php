@@ -36,8 +36,6 @@ class Vrijwilliger extends Model
         return $this->verstuurd_op !== null;
     }
 
-    // Een organisatie ziet al haar eigen vrijwilligers (ook concepten),
-    // de beheerder ziet van elke organisatie alleen wat is verstuurd
     public function scopeZichtbaarVoor(Builder $query, Gebruiker $gebruiker): Builder
     {
         return $gebruiker->IsBeheerder()
@@ -50,8 +48,6 @@ class Vrijwilliger extends Model
         return $query->whereNull('verstuurd_op');
     }
 
-    // Dubbel-check: dezelfde persoon binnen één organisatie heeft hetzelfde e-mailadres,
-    // óf dezelfde voornaam, tussenvoegsel, achternaam en geboortedatum. Geeft het veld terug waarop het misgaat, of null.
     public static function DubbelVeld(int $organisatieId, array $kolommen): ?string
     {
         $vrijwilligers = self::query()->where('organisatie_id', $organisatieId);

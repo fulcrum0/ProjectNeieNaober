@@ -8,7 +8,6 @@ return new class extends Migration
 {
     public function up(): void
     {
-        // De limiet "max. 5 pogingen per minuut" telt in de cache; op de hosting is dat de database
         Schema::create('cache', function (Blueprint $table)
         {
             $table->string('key')->primary();

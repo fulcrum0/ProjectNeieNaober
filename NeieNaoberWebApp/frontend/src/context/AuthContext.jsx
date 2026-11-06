@@ -7,7 +7,6 @@ export function AuthProvider({ children }) {
     const [user, setUser] = useState(null);
     const [checking, setChecking] = useState(true);
 
-    // Na het herladen van de pagina: is er nog een sessie bij de backend?
     useEffect(() => {
         setUnauthorizedHandler(() => setUser(null));
         api.get("/api/user")
@@ -16,7 +15,6 @@ export function AuthProvider({ children }) {
             .finally(() => setChecking(false));
     }, []);
 
-    // Geeft de gebruiker terug, of null bij verkeerde inloggegevens
     const login = async (email, password) => {
         try {
             const found = await api.post("/api/login", { email: email.trim(), password });

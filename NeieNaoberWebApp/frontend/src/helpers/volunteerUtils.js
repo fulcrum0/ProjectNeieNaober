@@ -1,12 +1,7 @@
-// "Jan van der Berg"; een leeg tussenvoegsel geeft geen dubbele spatie
 export const fullName = (v) => [v.firstName, v.infix, v.lastName].filter(Boolean).join(" ");
 
-// Nog niet verstuurd naar VIP! Tynaarlo
 export const isConcept = (v) => !v.sentAt;
 
-// Dubbel-check, zelfde regel als de backend: binnen één organisatie is het dezelfde persoon bij
-// hetzelfde e-mailadres, of bij dezelfde voornaam, tussenvoegsel, achternaam en geboortedatum.
-// Geeft het veld terug waarop het misgaat, of null.
 export function findDuplicateField(form, existing) {
     const same = (a, b) => a.trim().toLowerCase() === (b ?? "").trim().toLowerCase();
     if (form.email.trim() && existing.some((v) => same(form.email, v.email))) return "email";

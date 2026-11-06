@@ -8,11 +8,9 @@ return new class extends Migration
 {
     public function up(): void
     {
-        // Velden van een organisatie in de frontend: name, phone, email, location, type
         Schema::create('organisaties', function (Blueprint $table)
         {
             $table->id();
-            // Uniek: de Excel-import van vrijwilligers koppelt op de naam van de organisatie
             $table->string('naam', 150)->unique();
             $table->string('telefoon', 30)->nullable();
             $table->string('email')->nullable();

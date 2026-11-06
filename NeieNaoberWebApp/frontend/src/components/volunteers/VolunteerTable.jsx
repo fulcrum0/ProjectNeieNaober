@@ -11,7 +11,6 @@ import { volunteerToRow, rowToVolunteer } from "../../helpers/excelMappers";
 import { fullName, formatAddress } from "../../helpers/volunteerUtils";
 import ExportDialog from "../ui/ExportDialog";
 
-// showStatus: kolom Concept/Verstuurd (voor de organisatie). isLocked: rij mag niet verwijderd worden.
 export default function VolunteerTable({ volunteers, detailPath, onDelete, onImport, showStatus = false, isLocked = () => false }) {
     const columns = ["Vrijwilliger", "Email", "Ingediend", "Adres", ...(showStatus ? ["Status"] : []), "Detail", "Verwijderen"];
     const [exportOpen, setExportOpen] = useState(false);

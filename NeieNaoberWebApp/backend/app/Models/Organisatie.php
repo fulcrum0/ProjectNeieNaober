@@ -11,7 +11,6 @@ class Organisatie extends Model
 {
     use HasFactory;
 
-    // Laravel raadt tabelnamen met Engelse regels; bij Nederlandse namen zetten we hem zelf vast
     protected $table = 'organisaties';
 
     protected $fillable = ['naam', 'telefoon', 'email', 'locatie', 'soort'];

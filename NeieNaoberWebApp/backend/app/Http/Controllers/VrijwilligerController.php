@@ -14,7 +14,6 @@ use Illuminate\Validation\ValidationException;
 
 class VrijwilligerController extends Controller
 {
-    // Beheerder: alle vrijwilligers. Organisatie: alleen de eigen.
     public function index(Request $request): AnonymousResourceCollection
     {
         $vrijwilligers = Vrijwilliger::query()->zichtbaarVoor($request->user())->orderBy('id')->get();
@@ -22,8 +21,6 @@ class VrijwilligerController extends Controller
         return VrijwilligerResource::collection($vrijwilligers);
     }
 
-    // Een organisatie maakt een concept; pas na versturen ziet de beheerder hem.
-    // Wat de beheerder zelf toevoegt, is meteen bij VIP! en dus verstuurd.
     public function store(VrijwilligerRequest $request): VrijwilligerResource
     {
         $vrijwilliger = Vrijwilliger::create([
@@ -35,7 +32,6 @@ class VrijwilligerController extends Controller
         return new VrijwilligerResource($vrijwilliger);
     }
 
-    // Organisatie verstuurt (een deel van) haar concepten naar VIP! Tynaarlo
     public function send(Request $request): AnonymousResourceCollection
     {
         $request->validate(['ids' => ['required', 'array', 'min:1'], 'ids.*' => ['integer']]);
@@ -51,8 +47,6 @@ class VrijwilligerController extends Controller
         return VrijwilligerResource::collection($vrijwilligers->each->refresh());
     }
 
-    // Excel-import (alleen beheerder). Net als in v1.0: rijen zonder voornaam of
-    // met een onbekende organisatie worden overgeslagen.
     public function import(Request $request): AnonymousResourceCollection
     {
         $request->validate(['volunteers' => ['required', 'array']]);
@@ -77,7 +71,6 @@ class VrijwilligerController extends Controller
             $organisatieId = (int) $rij['orgId'];
             $kolommen = VrijwilligerRequest::NaarKolommen($validator->validated());
 
-            // Dubbel met wat er al staat, of met een eerdere rij in hetzelfde bestand
             $sleutels = array_filter([
                 filled($kolommen['email']) ? 'e|' . mb_strtolower($kolommen['email']) : null,
                 filled($kolommen['achternaam']) && filled($kolommen['geboortedatum'])
@@ -92,7 +85,6 @@ class VrijwilligerController extends Controller
 
             $gezien[$organisatieId] = [...$gezien[$organisatieId] ?? [], ...$sleutels];
 
-            // Door de beheerder geïmporteerd, dus al bij VIP!
             $nieuw->push(Vrijwilliger::create([
                 'organisatie_id' => $organisatieId,
                 ...$kolommen,
@@ -103,8 +95,6 @@ class VrijwilligerController extends Controller
         return VrijwilligerResource::collection($nieuw);
     }
 
-    // Een organisatie kan alleen haar eigen concepten verwijderen: verstuurde gegevens zijn al bij de gemeente.
-    // Ids van anderen worden genegeerd.
     public function destroy(Request $request): Response
     {
         $request->validate(['ids' => ['required', 'array'], 'ids.*' => ['integer']]);
@@ -123,7 +113,6 @@ class VrijwilligerController extends Controller
         return response()->noContent();
     }
 
-    // Excel geeft een telefoon- of huisnummer soms als getal (612345678); de controles verwachten tekst
     public static function AlsTekst(mixed $rij): array
     {
         return array_map(fn ($waarde) => is_int($waarde) || is_float($waarde) ? (string) $waarde : $waarde, is_array($rij) ? $rij : []);

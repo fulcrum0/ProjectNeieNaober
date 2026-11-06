@@ -109,10 +109,8 @@ class VersturenEnDubbelTest extends TestCase
             ->assertStatus(422)
             ->assertJsonPath('errors.birthDate.0', 'Deze vrijwilliger is al geregistreerd bij deze organisatie (zelfde naam en geboortedatum).');
 
-        // Ander tussenvoegsel: "Anna de Jansen" is een andere persoon dan "Anna Jansen"
         $this->postJson('/api/volunteers', $this->Formulier(['infix' => 'de', 'email' => 'derde@example.nl']))->assertCreated();
 
-        // Zelfde naam, andere geboortedatum: een andere persoon
         $this->postJson('/api/volunteers', $this->Formulier(['email' => 'ander@example.nl', 'birthDate' => '1990-05-05']))->assertCreated();
     }
 

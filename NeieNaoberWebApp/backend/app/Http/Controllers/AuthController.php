@@ -20,17 +20,14 @@ class AuthController extends Controller
 
         if (! $gelukt)
         {
-            // Altijd dezelfde melding, zodat niemand kan zien of een e-mailadres bestaat
             throw ValidationException::withMessages(['email' => __('auth.failed')]);
         }
 
-        // Nieuwe sessie-id na inloggen, tegen session fixation
         $request->session()->regenerate();
 
         return new GebruikerResource(Auth::guard('web')->user());
     }
 
-    // De frontend vraagt bij het laden wie er (nog) is ingelogd
     public function ik(Request $request): GebruikerResource
     {
         return new GebruikerResource($request->user());

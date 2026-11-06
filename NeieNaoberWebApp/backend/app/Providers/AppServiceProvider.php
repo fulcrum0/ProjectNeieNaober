@@ -16,10 +16,8 @@ class AppServiceProvider extends ServiceProvider
 
     public function boot(): void
     {
-        // De frontend verwacht kale objecten en lijsten, zonder { data: ... } eromheen
         JsonResource::withoutWrapping();
 
-        // Per e-mailadres én IP: raden van één wachtwoord stopt na 5 keer, andere collega's kunnen gewoon inloggen
         RateLimiter::for('login', fn (Request $request) => Limit::perMinute(5)
             ->by(strtolower((string) $request->input('email')) . '|' . $request->ip()));
     }

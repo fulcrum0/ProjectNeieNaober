@@ -15,7 +15,6 @@
     gap: 8px;
 }
 
-/* 5: zoekbalk in dezelfde stijl als de invoervelden en knoppen */
 .search {
     display: flex;
     align-items: center;
@@ -56,7 +55,6 @@
     color: var(--muted);
 }
 
-/* 6: lichtere lijnen en ronde hoeken aan de kop van de tabel */
 .table {
     width: 100%;
     table-layout: fixed;
@@ -103,7 +101,6 @@
     width: 44px;
 }
 
-/* 2: telling links, knop "Verwijderen" rechts met ruimte ertussen */
 .table-footer {
     display: flex;
     justify-content: space-between;

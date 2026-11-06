@@ -15,10 +15,8 @@ class Gebruiker extends Authenticatable
 
     protected $table = 'gebruikers';
 
-    // Onze kolom heet "wachtwoord" in plaats van "password"
     protected $authPasswordName = 'wachtwoord';
 
-    // We hebben geen "onthoud mij", dus ook geen kolom remember_token
     protected $rememberTokenName = '';
 
     protected $fillable = ['organisatie_id', 'naam', 'email', 'wachtwoord', 'rol'];

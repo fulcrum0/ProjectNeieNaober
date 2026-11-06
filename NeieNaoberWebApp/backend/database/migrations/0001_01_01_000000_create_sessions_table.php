@@ -8,7 +8,6 @@ return new class extends Migration
 {
     public function up(): void
     {
-        // Laravel gebruikt deze tabel voor de wachtwoord-link uit de uitnodiging
         Schema::create('password_reset_tokens', function (Blueprint $table)
         {
             $table->string('email')->primary();
@@ -16,7 +15,6 @@ return new class extends Migration
             $table->timestamp('created_at')->nullable();
         });
 
-        // Sanctum werkt met een sessie-cookie, dus de sessies staan in de database
         Schema::create('sessions', function (Blueprint $table)
         {
             $table->string('id')->primary();

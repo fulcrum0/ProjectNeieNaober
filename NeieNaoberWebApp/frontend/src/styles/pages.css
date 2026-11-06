@@ -21,7 +21,6 @@
     gap: 8px;
 }
 
-/* Aantal nog te versturen, op de knop "Gegevens versturen" */
 .count-pill {
     min-width: 22px;
     height: 22px;
@@ -34,7 +33,6 @@
     font-size: 12px;
 }
 
-/* Gegevens versturen */
 .send-intro {
     max-width: 870px;
     margin-bottom: 16px;
@@ -161,8 +159,6 @@
     margin-bottom: 24px;
 }
 
-/* Twee kolommen naast elkaar: de pagina wordt half zo lang. De secties lopen van boven naar beneden
-   door, eerst in de linker- en dan in de rechterkolom, en een sectie wordt nooit in tweeën gesplitst. */
 .privacy__columns {
     columns: 2;
     column-gap: 16px;
@@ -173,7 +169,6 @@
     margin-bottom: 16px;
 }
 
-/* Nooit breder dan het scherm: lange woorden en e-mailadressen breken af */
 .privacy__columns .form-section__body {
     min-width: 0;
     overflow-wrap: anywhere;

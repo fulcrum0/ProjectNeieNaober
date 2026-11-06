@@ -12,14 +12,12 @@ const empty = {
     street: "", houseNumber: "", addition: "", postcode: "", birthDate: "",
 };
 
-// Wat de gebruiker kan typen: letters in een telefoon- of huisnummer komen er niet eens in
 const inputFilters = {
     phone: (v) => v.replace(/[^0-9+ -]/g, ""),
     houseNumber: (v) => v.replace(/\D/g, ""),
     postcode: (v) => v.toUpperCase().replace(/[^0-9A-Z ]/g, ""),
 };
 
-// Geeft per veld de foutmelding terug, of "" als het goed is
 function validate(form, existing) {
     const required = (v, check, message, emptyMessage) => (!v.trim() ? emptyMessage : check(v) ? "" : message);
     const optional = (v, check, message) => (v.trim() && !check(v) ? message : "");
@@ -34,7 +32,6 @@ function validate(form, existing) {
         postcode: optional(form.postcode, isPostcode, "Vul een postcode in zoals 9481 AB."),
     };
 
-    // Minstens één manier om de vrijwilliger te bereiken: niet iedereen heeft e-mail
     if (!form.email.trim() && !form.phone.trim()) {
         errors.email = errors.phone = "Vul een e-mailadres of telefoonnummer in.";
     }

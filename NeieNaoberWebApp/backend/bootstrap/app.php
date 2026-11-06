@@ -20,7 +20,6 @@ return Application::configure(basePath: dirname(__DIR__))
     )
     ->withMiddleware(function (Middleware $middleware): void
     {
-        // React en Laravel op hetzelfde domein: Sanctum werkt dan met de sessie-cookie
         $middleware->statefulApi();
 
         $middleware->alias([
@@ -33,7 +32,6 @@ return Application::configure(basePath: dirname(__DIR__))
 
         $exceptions->shouldRenderJsonWhen($isApi);
 
-        // Vaste meldingen in gewone taal (TO 5.2); React toont ze zoals ze zijn
         $exceptions->render(function (ValidationException $e, Request $request) use ($isApi)
         {
             if ($isApi($request))
@@ -63,15 +61,12 @@ return Application::configure(basePath: dirname(__DIR__))
 
         $exceptions->render(function (NotFoundHttpException $e, Request $request) use ($isApi)
         {
-            // Model niet gevonden komt hier ook binnen, als NotFoundHttpException
             if ($isApi($request))
             {
                 return response()->json(['message' => 'Dit record bestaat niet.'], 404);
             }
         });
 
-        // 419: XSRF-token verlopen. React haalt dan een nieuw token en probeert het opnieuw.
-        // Laravel maakt van TokenMismatchException al een HttpException met code 419
         $exceptions->render(function (HttpException $e, Request $request) use ($isApi)
         {
             if ($e->getStatusCode() === 419 && $isApi($request))

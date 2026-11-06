@@ -9,8 +9,6 @@ use Symfony\Component\HttpKernel\Exception\AccessDeniedHttpException;
 
 class EnsureRol
 {
-    // Gebruik: ->middleware('rol:beheerder')
-    // De rol komt uit de database, niet uit het tabblad op het loginscherm
     public function handle(Request $request, Closure $next, string ...$rollen): Response
     {
         $gebruiker = $request->user();

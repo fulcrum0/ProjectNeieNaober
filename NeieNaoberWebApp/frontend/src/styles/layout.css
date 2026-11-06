@@ -33,7 +33,6 @@
     padding: 0 32px;
 }
 
-/* Alleen de pagina waar je bent krijgt een streep; de andere alleen bij hover */
 .header__nav a {
     display: flex;
     align-items: center;

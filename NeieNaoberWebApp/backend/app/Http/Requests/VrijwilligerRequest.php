@@ -7,13 +7,10 @@ use Closure;
 use Illuminate\Foundation\Http\FormRequest;
 use Illuminate\Validation\Validator;
 
-// Dezelfde velden als het formulier in de frontend (VolunteerForm.jsx)
 class VrijwilligerRequest extends FormRequest
 {
-    // Letters (ook met accenten), spaties, apostrof, punt en streepje: "van 't Hof", "Anne-Marie"
     private const NAAM = "/^\\p{L}[\\p{L}\\s'.-]*$/u";
 
-    // Mag met een apostrof beginnen: "van der", "'t", "in 't"
     private const TUSSENVOEGSEL = "/^[\\p{L}\\s'.-]+$/u";
 
     public const DUBBEL_MELDINGEN = [
@@ -24,14 +21,11 @@ class VrijwilligerRequest extends FormRequest
     public function rules(): array
     {
         return [
-            // Een organisatie registreert altijd voor zichzelf; alleen de beheerder kiest de organisatie
             'orgId' => [$this->user()->IsBeheerder() ? 'required' : 'nullable', 'integer', 'exists:organisaties,id'],
             ...self::Velden(),
-            // Strenger dan de Excel-import; dezelfde controles als in het formulier (helpers/validators.js)
             'firstName' => ['required', 'string', 'max:50', 'regex:' . self::NAAM],
             'infix' => ['nullable', 'string', 'max:20', 'regex:' . self::TUSSENVOEGSEL],
             'lastName' => ['required', 'string', 'max:100', 'regex:' . self::NAAM],
-            // Minstens één manier om de vrijwilliger te bereiken: niet iedereen heeft e-mail
             'email' => ['required_without:phone', 'nullable', 'string', 'email', 'max:255'],
             'birthDate' => ['nullable', 'date', 'after_or_equal:1900-01-01', 'before_or_equal:today'],
             'phone' => ['required_without:email', 'nullable', 'string', 'max:20', 'regex:/^\+?[0-9 -]+$/', function (string $veld, mixed $waarde, Closure $fout)
@@ -48,13 +42,11 @@ class VrijwilligerRequest extends FormRequest
         ];
     }
 
-    // Een organisatie registreert altijd voor zichzelf; alleen de beheerder kiest de organisatie
     public function OrganisatieId(): int
     {
         return $this->user()->IsBeheerder() ? $this->integer('orgId') : $this->user()->organisatie_id;
     }
 
-    // Dubbel-check, pas als alle velden verder goed zijn
     public function after(): array
     {
         return [
@@ -75,7 +67,6 @@ class VrijwilligerRequest extends FormRequest
         ];
     }
 
-    // Dezelfde meldingen als in het formulier
     public function messages(): array
     {
         return [
@@ -92,7 +83,6 @@ class VrijwilligerRequest extends FormRequest
         ];
     }
 
-    // Ook gebruikt door de Excel-import, waar alleen de voornaam verplicht is (zoals in v1.0)
     public static function Velden(): array
     {
         return [
@@ -109,7 +99,6 @@ class VrijwilligerRequest extends FormRequest
         ];
     }
 
-    // Van de namen in de frontend naar de kolommen in de database
     public static function NaarKolommen(array $gegevens): array
     {
         return [
@@ -126,7 +115,6 @@ class VrijwilligerRequest extends FormRequest
         ];
     }
 
-    // Typen mag in kleine letters; opgeslagen wordt met een hoofdletter: "jan" -> "Jan"
     private static function Hoofdletter(string $tekst): string
     {
         $tekst = trim($tekst);

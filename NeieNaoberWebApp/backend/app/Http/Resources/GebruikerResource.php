@@ -6,10 +6,8 @@ use App\Models\Gebruiker;
 use Illuminate\Http\Request;
 use Illuminate\Http\Resources\Json\JsonResource;
 
-// Zelfde vorm als een user in de frontend: { id, email, name, initials, role, orgId }
 class GebruikerResource extends JsonResource
 {
-    // De frontend kent de rollen "admin" en "organisation" (src/data/constants.js)
     private const ROLLEN = [
         Gebruiker::ROL_BEHEERDER => 'admin',
         Gebruiker::ROL_ORGANISATIE => 'organisation',

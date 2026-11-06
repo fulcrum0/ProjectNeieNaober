@@ -8,7 +8,6 @@ use Illuminate\Foundation\Testing\TestCase as BaseTestCase;
 
 abstract class TestCase extends BaseTestCase
 {
-    // Sanctum start alleen een sessie voor verzoeken van de eigen frontend
     protected function ViaFrontend(): static
     {
         return $this->withHeader('Origin', 'http://localhost:5173');

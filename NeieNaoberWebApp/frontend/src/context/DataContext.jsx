@@ -5,15 +5,12 @@ import { useAuth } from "./AuthContext";
 const DataContext = createContext(null);
 const empty = { owner: null, organisations: [], volunteers: [] };
 
-// Toont een fout van de backend; de schermen uit v1.0 hebben daar geen eigen plek voor.
-// Liever de precieze melding ("al verstuurd", "al geregistreerd") dan de algemene.
 const report = (err) => window.alert(Object.values(err.errors).flat()[0] ?? err.message);
 
 export function DataProvider({ children }) {
     const { user } = useAuth();
     const [data, setData] = useState(empty);
 
-    // De gegevens horen bij deze inlog: na elke keer inloggen (of herladen) opnieuw ophalen
     const ready = !user || data.owner === user;
 
     useEffect(() => {
@@ -35,7 +32,6 @@ export function DataProvider({ children }) {
     const getVolunteer = (id) => volunteers.find((v) => v.id === id);
     const getOrganisation = (id) => organisations.find((o) => o.id === id);
 
-    // Geeft true terug als het gelukt is, zodat het formulier weet of het verder mag
     const addVolunteer = (orgId, values) =>
         api.post("/api/volunteers", { orgId, ...values })
             .then((v) => {
@@ -47,7 +43,6 @@ export function DataProvider({ children }) {
                 return false;
             });
 
-    // Organisatie verstuurt concepten naar VIP! Tynaarlo; geeft de verstuurde vrijwilligers terug
     const sendVolunteers = (ids) =>
         api.post("/api/volunteers/send", { ids })
             .then((sent) => {
