@@ -13,9 +13,8 @@ class GebruikerFactory extends Factory
         return [
             'naam' => fake()->name(),
             'email' => fake()->unique()->safeEmail(),
-            'wachtwoord' => 'Wachtwoord1234',
-            'rol' => Gebruiker::ROL_MEDEWERKER,
-            'actief' => true,
+            'wachtwoord' => 'password123',
+            'rol' => Gebruiker::ROL_BEHEERDER,
         ];
     }
 
@@ -25,10 +24,5 @@ class GebruikerFactory extends Factory
             'rol' => Gebruiker::ROL_ORGANISATIE,
             'organisatie_id' => $organisatie?->id ?? Organisatie::factory(),
         ]);
-    }
-
-    public function beheerder(): static
-    {
-        return $this->state(fn () => ['rol' => Gebruiker::ROL_BEHEERDER]);
     }
 }

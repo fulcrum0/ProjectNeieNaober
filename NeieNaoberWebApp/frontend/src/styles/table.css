@@ -1,50 +1,97 @@
 .table-card {
-    padding: 16px;
-    border-radius: 16px;
+    padding: 20px;
 }
 
 .table-toolbar {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
     gap: 12px;
-    margin-bottom: 12px;
+    margin-bottom: 16px;
 }
 
 .table-toolbar__actions {
+    display: flex;
     gap: 8px;
 }
 
+/* 5: zoekbalk in dezelfde stijl als de invoervelden en knoppen */
 .search {
+    display: flex;
+    align-items: center;
+    gap: 10px;
     width: min(430px, 100%);
     height: 38px;
     flex: 0 1 430px;
+    padding: 0 14px;
+    background: #fff;
+    border: 1px solid var(--border);
+    border-radius: var(--radius);
+    color: var(--muted);
+    transition: border-color 0.15s, box-shadow 0.15s;
+}
+
+.search:hover {
+    border-color: #b9b3c6;
+}
+
+.search:focus-within {
+    border-color: var(--purple);
+    box-shadow: 0 0 0 3px var(--purple-light);
+    color: var(--purple);
 }
 
 .search input {
+    flex: 1;
     min-width: 0;
+    height: 100%;
+    border: 0;
+    outline: 0;
+    background: none;
+    font: inherit;
+    color: var(--text);
 }
 
+.search input::placeholder {
+    color: var(--muted);
+}
+
+/* 6: lichtere lijnen en ronde hoeken aan de kop van de tabel */
 .table {
     width: 100%;
     table-layout: fixed;
-    border-collapse: collapse;
+    border-collapse: separate;
+    border-spacing: 0;
 }
 
 .table th {
     height: 44px;
-    padding: 10px 8px 0;
+    padding: 0 8px;
     font-size: 14px;
-    border: 1px solid #6d5a82;
     background: var(--purple-light);
     color: var(--purple);
     text-align: left;
-    vertical-align: top;
+    vertical-align: middle;
+}
+
+.table th:first-child {
+    border-radius: var(--radius) 0 0 var(--radius);
+}
+
+.table th:last-child {
+    border-radius: 0 var(--radius) var(--radius) 0;
 }
 
 .table td {
     height: 52px;
     padding: 0 8px;
     font-size: 13px;
-    border-bottom: 1px solid #2a2a35;
+    border-bottom: 1px solid var(--border);
     overflow-wrap: anywhere;
+}
+
+.table tbody tr:hover td {
+    background: #faf8fc;
 }
 
 .table .strong {
@@ -56,7 +103,12 @@
     width: 44px;
 }
 
+/* 2: telling links, knop "Verwijderen" rechts met ruimte ertussen */
 .table-footer {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    gap: 16px;
     margin-top: 12px;
     padding-top: 12px;
     font-size: 13px;

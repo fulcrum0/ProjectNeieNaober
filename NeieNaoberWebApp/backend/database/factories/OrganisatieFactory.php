@@ -10,7 +10,10 @@ class OrganisatieFactory extends Factory
     {
         return [
             'naam' => fake()->unique()->company(),
-            'plaats' => fake()->randomElement(['Vries', 'Zuidlaren', 'Eelde', 'Paterswolde', 'Tynaarlo']),
+            'telefoon' => fake()->phoneNumber(),
+            'email' => fake()->companyEmail(),
+            'locatie' => fake()->randomElement(['Vries', 'Zuidlaren', 'Eelde', 'Paterswolde', 'Tynaarlo']) . ' / Drenthe',
+            'soort' => fake()->randomElement(['Horeca', 'Zorg', 'Sport', 'Cultuur']),
         ];
     }
 }

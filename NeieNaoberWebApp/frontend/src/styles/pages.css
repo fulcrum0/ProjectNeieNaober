@@ -15,11 +15,73 @@
     margin: 0;
 }
 
+.page-head__actions {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 8px;
+}
+
+/* Aantal nog te versturen, op de knop "Gegevens versturen" */
+.count-pill {
+    min-width: 22px;
+    height: 22px;
+    padding: 0 7px;
+    display: inline-grid;
+    place-items: center;
+    border-radius: 11px;
+    background: var(--purple);
+    color: #fff;
+    font-size: 12px;
+}
+
+/* Gegevens versturen */
+.send-intro {
+    max-width: 870px;
+    margin-bottom: 16px;
+}
+
+.send-section {
+    margin-bottom: 16px;
+}
+
+.send-section__title {
+    font-size: 20px;
+    margin-bottom: 12px;
+}
+
+.send-consent {
+    margin-top: 16px;
+}
+
+.empty-state {
+    display: flex;
+    flex-direction: column;
+    align-items: flex-start;
+    gap: 12px;
+    padding: 8px 0;
+}
+
+.note--success {
+    flex-direction: row;
+    align-items: center;
+    gap: 10px;
+    max-width: 870px;
+    margin-bottom: 16px;
+    background: #e8f5ec;
+    border-left: 3px solid #1e7a3c;
+    color: #1e7a3c;
+}
+
+.note--success p {
+    color: #1e7a3c;
+    font-weight: 700;
+}
+
 .stats {
     display: grid;
     grid-template-columns: 1fr 1fr;
-    gap: 12px;
-    margin-bottom: 12px;
+    gap: 16px;
+    margin-bottom: 16px;
 }
 
 .stats> :first-child {
@@ -28,7 +90,7 @@
 }
 
 .stats--org {
-    grid-template-columns: minmax(0, 1fr) 220px;
+    grid-template-columns: minmax(0, 1fr) 220px 220px;
     justify-content: space-between;
 }
 
@@ -45,10 +107,21 @@
     max-width: none;
 }
 
-.tiles {
-    display: flex;
-    justify-content: space-around;
-    padding: 40px 0;
+.stats--pair {
+    grid-template-columns: repeat(2, 220px);
+}
+
+.stats--pair> :first-child {
+    grid-column: auto;
+    max-width: none;
+}
+
+@media (max-width: 900px) {
+
+    .stats--org,
+    .stats--pair {
+        grid-template-columns: 1fr;
+    }
 }
 
 .login-wrap {
@@ -64,7 +137,6 @@
     min-height: 0;
     gap: 14px;
     padding: 24px;
-    border-radius: 32px 0 0 0;
 }
 
 .login-card__title {
@@ -76,7 +148,7 @@
 }
 
 .privacy {
-    max-width: 870px;
+    max-width: 100%;
 }
 
 .privacy__title {
@@ -85,12 +157,37 @@
 }
 
 .privacy__intro {
+    max-width: 870px;
     margin-bottom: 24px;
+}
+
+/* Twee kolommen naast elkaar: de pagina wordt half zo lang. De secties lopen van boven naar beneden
+   door, eerst in de linker- en dan in de rechterkolom, en een sectie wordt nooit in tweeën gesplitst. */
+.privacy__columns {
+    columns: 2;
+    column-gap: 16px;
+}
+
+.privacy__columns .form-section {
+    break-inside: avoid;
+    margin-bottom: 16px;
+}
+
+/* Nooit breder dan het scherm: lange woorden en e-mailadressen breken af */
+.privacy__columns .form-section__body {
+    min-width: 0;
+    overflow-wrap: anywhere;
+}
+
+@media (max-width: 1000px) {
+    .privacy__columns {
+        columns: 1;
+    }
 }
 
 .policy-table>div {
     display: grid;
-    grid-template-columns: 200px 1fr;
+    grid-template-columns: minmax(120px, 180px) minmax(0, 1fr);
     gap: 20px;
     padding: 12px 0;
     border-bottom: 1px solid var(--border);
@@ -110,6 +207,7 @@
 .policy-role {
     background: var(--bg);
     padding: 16px;
+    border-radius: var(--radius);
 }
 
 .policy-role p {
@@ -121,6 +219,7 @@
     flex-direction: column;
     gap: 6px;
     padding: 16px;
+    border-radius: var(--radius);
 }
 
 .note p {

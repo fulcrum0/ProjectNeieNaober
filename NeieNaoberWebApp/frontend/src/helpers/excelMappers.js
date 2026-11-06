@@ -2,6 +2,7 @@ import { formatDate } from "./formatDate";
 
 export const volunteerToRow = (v, orgName) => ({
     Voornaam: v.firstName,
+    Tussenvoegsel: v.infix,
     Achternaam: v.lastName,
     Email: v.email,
     Telefoonnummer: v.phone,
@@ -15,6 +16,7 @@ export const volunteerToRow = (v, orgName) => ({
 
 export const rowToVolunteer = (r) => ({
     firstName: r.Voornaam ?? "",
+    infix: r.Tussenvoegsel ?? "",
     lastName: r.Achternaam ?? "",
     email: r.Email ?? "",
     phone: r.Telefoonnummer ?? "",

@@ -28,18 +28,29 @@
 
 .header__nav {
     display: flex;
-    gap: 32px;
-    height: 40px;
+    gap: 48px;
+    height: 44px;
     padding: 0 32px;
-    gap: 24px;
 }
 
+/* Alleen de pagina waar je bent krijgt een streep; de andere alleen bij hover */
 .header__nav a {
     display: flex;
     align-items: center;
     font-weight: 700;
+    color: var(--muted);
+    border-bottom: 3px solid transparent;
+    transition: color 0.15s, border-color 0.15s;
+}
+
+.header__nav a:hover {
     color: var(--purple);
-    border-bottom: 2px solid var(--purple);
+    border-bottom-color: var(--purple-light);
+}
+
+.header__nav a.active {
+    color: var(--purple);
+    border-bottom-color: var(--purple);
 }
 
 .logo img {
@@ -81,6 +92,7 @@
     background: #fff;
     border: 1px solid var(--border);
     border-radius: var(--radius);
+    box-shadow: var(--shadow);
     padding: 4px;
     z-index: 5;
 }

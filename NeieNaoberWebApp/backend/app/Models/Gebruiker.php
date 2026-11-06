@@ -5,15 +5,13 @@ namespace App\Models;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Relations\BelongsTo;
 use Illuminate\Foundation\Auth\User as Authenticatable;
-use Illuminate\Notifications\Notifiable;
 
 class Gebruiker extends Authenticatable
 {
-    use HasFactory, Notifiable;
+    use HasFactory;
 
-    public const ROL_ORGANISATIE = 'organisatie';
-    public const ROL_MEDEWERKER = 'medewerker';
     public const ROL_BEHEERDER = 'beheerder';
+    public const ROL_ORGANISATIE = 'organisatie';
 
     protected $table = 'gebruikers';
 
@@ -23,7 +21,7 @@ class Gebruiker extends Authenticatable
     // We hebben geen "onthoud mij", dus ook geen kolom remember_token
     protected $rememberTokenName = '';
 
-    protected $fillable = ['organisatie_id', 'naam', 'email', 'wachtwoord', 'rol', 'actief'];
+    protected $fillable = ['organisatie_id', 'naam', 'email', 'wachtwoord', 'rol'];
 
     protected $hidden = ['wachtwoord'];
 
@@ -31,7 +29,6 @@ class Gebruiker extends Authenticatable
     {
         return [
             'wachtwoord' => 'hashed',
-            'actief' => 'boolean',
         ];
     }
 
@@ -40,8 +37,8 @@ class Gebruiker extends Authenticatable
         return $this->belongsTo(Organisatie::class, 'organisatie_id');
     }
 
-    public function IsVip(): bool
+    public function IsBeheerder(): bool
     {
-        return in_array($this->rol, [self::ROL_MEDEWERKER, self::ROL_BEHEERDER], true);
+        return $this->rol === self::ROL_BEHEERDER;
     }
 }

@@ -1,8 +1,9 @@
 import { Link } from "react-router-dom";
+import StatusBadge from "../ui/StatusBadge";
 import { formatDate } from "../../helpers/formatDate";
 import { fullName, formatAddress } from "../../helpers/volunteerUtils";
 
-export default function VolunteerRow({ volunteer: v, selected, onToggle, detailTo, onDelete }) {
+export default function VolunteerRow({ volunteer: v, selected, onToggle, detailTo, onDelete, showStatus, locked }) {
     return (
         <tr>
             <td className="col-check">
@@ -12,9 +13,15 @@ export default function VolunteerRow({ volunteer: v, selected, onToggle, detailT
             <td>{v.email}</td>
             <td>{formatDate(v.createdAt)}</td>
             <td>{formatAddress(v)}</td>
+            {showStatus && <td><StatusBadge volunteer={v} /></td>}
             <td><Link className="link-btn" to={detailTo}>Detail</Link></td>
             <td>
-                <button className="link-btn link-btn--danger" onClick={() => onDelete([v.id])}>Verwijderen</button>
+                <button
+                    className="link-btn link-btn--danger" onClick={() => onDelete([v.id])} disabled={locked}
+                    title={locked ? "Al verstuurd naar VIP! Tynaarlo" : undefined}
+                >
+                    Verwijderen
+                </button>
             </td>
         </tr>
     );

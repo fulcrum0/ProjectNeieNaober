@@ -1,7 +1,8 @@
 .card {
     background: #fff;
     border: 1px solid var(--border);
-    border-radius: 4px 4px 28px 4px;
+    border-radius: var(--radius-lg);
+    box-shadow: var(--shadow);
     padding: 20px;
 }
 
@@ -85,6 +86,11 @@
     border: 2px solid var(--danger);
 }
 
+.field__optional {
+    font-weight: 400;
+    color: var(--muted);
+}
+
 .field__error {
     color: var(--danger);
     font-weight: 700;
@@ -111,23 +117,86 @@
     color: var(--purple);
 }
 
-.nav-tile {
-    display: flex;
+/* 3: aantallen op het dashboard zijn knoppen die een lijst openklappen */
+.stat-card--button {
+    font: inherit;
+    text-align: left;
+    cursor: pointer;
+    transition: box-shadow 0.15s, border-color 0.15s, transform 0.15s;
+}
+
+.stat-card--button:hover {
+    box-shadow: var(--shadow-hover);
+    border-color: var(--purple);
+    transform: translateY(-1px);
+}
+
+.stat-card--button:focus-visible {
+    outline: 3px solid var(--purple-light);
+    border-color: var(--purple);
+}
+
+.stat-card--open {
+    border-color: var(--purple);
+    background: var(--purple-light);
+}
+
+.stat-card__hint {
+    display: inline-flex;
     align-items: center;
-    gap: 14px;
-    height: 72px;
-    padding: 0 24px;
-    border-radius: 24px;
-    color: var(--purple);
+    gap: 4px;
+    margin-top: 4px;
+    font-size: 13px;
     font-weight: 700;
-    background: linear-gradient(#ddd0ec, #f1eaf8);
-    box-shadow: 0 4px 10px rgba(86, 38, 127, 0.3);
+    color: var(--purple);
+}
+
+.stat-card__chevron {
+    transition: transform 0.2s;
+}
+
+.stat-card--open .stat-card__chevron {
+    transform: rotate(180deg);
+}
+
+.dropdown-panel {
+    margin-bottom: 16px;
+    animation: dropdown-open 0.2s ease-out;
+    transform-origin: top;
+}
+
+.dropdown-panel__title {
+    font-size: 22px;
+    margin: 8px 0 12px;
+}
+
+@keyframes dropdown-open {
+    from {
+        opacity: 0;
+        transform: translateY(-8px) scaleY(0.98);
+    }
+
+    to {
+        opacity: 1;
+        transform: none;
+    }
+}
+
+@media (prefers-reduced-motion: reduce) {
+
+    .dropdown-panel,
+    .stat-card--button,
+    .stat-card__chevron {
+        animation: none;
+        transition: none;
+    }
 }
 
 .form-section {
     background: #fff;
     border: 1px solid var(--border);
-    border-radius: 24px 0 0 0;
+    border-radius: var(--radius-lg);
+    box-shadow: var(--shadow);
     overflow: hidden;
     margin-bottom: 12px;
 }
@@ -202,6 +271,7 @@
     display: flex;
     gap: 14px;
     padding: 12px;
+    border-radius: var(--radius);
     border: 1px solid var(--danger);
     background: var(--danger-bg);
     font-weight: 700;
@@ -247,6 +317,40 @@
     color: var(--danger);
 }
 
+.link-btn:disabled {
+    color: #a9aab4;
+    cursor: not-allowed;
+}
+
+.link-plain {
+    color: inherit;
+}
+
+.link-plain:hover {
+    color: var(--purple);
+    text-decoration: underline;
+}
+
+/* Status van een vrijwilliger: concept of verstuurd naar VIP! */
+.badge {
+    display: inline-block;
+    padding: 2px 10px;
+    border-radius: 999px;
+    font-size: 12px;
+    font-weight: 700;
+    white-space: nowrap;
+}
+
+.badge--concept {
+    background: #fff4e0;
+    color: #8a5300;
+}
+
+.badge--sent {
+    background: #e8f5ec;
+    color: #1e7a3c;
+}
+
 @media (max-width: 1000px) {
 
     .form-grid,
@@ -272,7 +376,8 @@
     gap: 12px;
     padding: 24px;
     background: #fff;
-    border-radius: 16px;
+    border-radius: var(--radius-lg);
+    box-shadow: 0 12px 40px rgba(28, 32, 51, 0.25);
 }
 
 .dialog__title {

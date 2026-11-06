@@ -1,42 +1,48 @@
-import { Building2, FileSpreadsheet, Settings, Users } from "lucide-react";
+import { useState } from "react";
 import StatCard from "../components/ui/StatCard";
-import NavTile from "../components/ui/NavTile";
-import Alert from "../components/ui/Alert";
+import OrganisationTable from "../components/organisations/OrganisationTable";
+import VolunteerTable from "../components/volunteers/VolunteerTable";
 import { useAuth } from "../context/AuthContext";
-import { useApi } from "../hooks/useApi";
-import { isBeheerder } from "../data/constants";
-import { formatDate } from "../helpers/formatDate";
+import { useData } from "../context/DataContext";
 
 export default function AdminDashboard() {
     const { user } = useAuth();
-    const { data, error } = useApi("/api/vip/overzicht");
-    const periode = data?.periode;
-    const waarde = (key) => data?.[key] ?? "-";
+    const { organisations, volunteers, removeVolunteers, importVolunteers } = useData();
+    const [open, setOpen] = useState(null);
+
+    const toggle = (list) => setOpen((current) => (current === list ? null : list));
 
     return (
         <>
             <h1 className="page-title">Dashboard</h1>
-            {error && <Alert type="error" title={error.message} />}
-            <div className="stats stats--vip">
-                <StatCard large label="Welkom," value={user.naam} />
-                <StatCard label="Organisaties" value={waarde("aantal_organisaties")} />
-                <StatCard label="Aanmeldingen (verstuurd)" value={waarde("aantal_aanmeldingen")} />
-                <StatCard label="Nog te controleren" value={waarde("aantal_nieuw")} />
-                <StatCard label="Mogelijk dubbel" value={waarde("aantal_dubbel")} />
+            <div className="stats">
+                <StatCard large label="Welkom," value={user.name} />
+                <StatCard
+                    label="Totaal geregistreerd organisaties" value={organisations.length}
+                    expanded={open === "organisations"} onClick={() => toggle("organisations")}
+                />
+                <StatCard
+                    label="Totaal geregistreerd vrijwilligers" value={volunteers.length}
+                    expanded={open === "volunteers"} onClick={() => toggle("volunteers")}
+                />
             </div>
-            {data && (
-                <p className="muted">
-                    {periode
-                        ? `Periode ${periode.naam}: ${formatDate(periode.startdatum)} t/m ${formatDate(periode.einddatum)}${periode.open ? " (open)" : " (gesloten)"} · ${data.aantal_goedgekeurd} goedgekeurd · ${data.aantal_afgekeurd} afgekeurd`
-                        : "Er is nog geen aanmeldperiode. De beheerder maakt die aan onder Beheer."}
-                </p>
+            {open === "organisations" && (
+                <section className="dropdown-panel" aria-label="Organisatielijst">
+                    <h2 className="dropdown-panel__title">Organisatielijst</h2>
+                    <OrganisationTable />
+                </section>
             )}
-            <div className="tiles">
-                <NavTile to="/admin/vrijwilligers" icon={Users} label="AANMELDINGEN" />
-                <NavTile to="/admin/organisaties" icon={Building2} label="ORGANISATIELIJST" />
-                <NavTile to="/admin/export" icon={FileSpreadsheet} label="EXPORT & SJABLOON" />
-                {isBeheerder(user) && <NavTile to="/admin/beheer" icon={Settings} label="BEHEER" />}
-            </div>
+            {open === "volunteers" && (
+                <section className="dropdown-panel" aria-label="Vrijwilligerlijst">
+                    <h2 className="dropdown-panel__title">Vrijwilligerlijst</h2>
+                    <VolunteerTable
+                        volunteers={volunteers}
+                        detailPath={(id) => `/admin/vrijwilligers/${id}`}
+                        onDelete={removeVolunteers}
+                        onImport={importVolunteers}
+                    />
+                </section>
+            )}
         </>
     );
 }

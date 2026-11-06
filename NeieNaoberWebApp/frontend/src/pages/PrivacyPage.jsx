@@ -14,13 +14,15 @@ export default function PrivacyPage() {
             </Button>
             <h1 className="page-title privacy__title">Privacyverklaring</h1>
             <p className="muted privacy__intro">{privacyIntro}</p>
-            {privacySections.map((s, i) => (
-                <FormSection key={s.title} title={`${i + 1}. ${s.title}`}>
-                    {s.blocks.map((b, j) => (
-                        <PolicyBlock key={j} block={b} />
-                    ))}
-                </FormSection>
-            ))}
+            <div className="privacy__columns">
+                {privacySections.map((s, i) => (
+                    <FormSection key={s.title} title={`${i + 1}. ${s.title}`}>
+                        {s.blocks.map((b, j) => (
+                            <PolicyBlock key={j} block={b} />
+                        ))}
+                    </FormSection>
+                ))}
+            </div>
         </div>
     );
 }

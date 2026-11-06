@@ -5,19 +5,19 @@ namespace App\Http\Resources;
 use Illuminate\Http\Request;
 use Illuminate\Http\Resources\Json\JsonResource;
 
+// Zelfde vorm als een organisatie in de frontend: { id, name, phone, email, location, type }.
+// Ids als tekst, want de frontend vergelijkt ze met ids uit de URL (useParams geeft tekst).
 class OrganisatieResource extends JsonResource
 {
     public function toArray(Request $request): array
     {
         return [
-            'id' => $this->id,
-            'naam' => $this->naam,
-            'plaats' => $this->plaats,
-            'email' => $this->whenLoaded('gebruiker', fn () => $this->gebruiker?->email),
-            'aantal_aanmeldingen' => $this->whenHas('aanmeldingen_count'),
-            'aantal_nieuw' => $this->whenHas('nieuw_count'),
-            'aantal_goedgekeurd' => $this->whenHas('goedgekeurd_count'),
-            'aangemaakt_op' => $this->created_at,
+            'id' => (string) $this->id,
+            'name' => $this->naam,
+            'phone' => $this->telefoon ?? '',
+            'email' => $this->email ?? '',
+            'location' => $this->locatie ?? '',
+            'type' => $this->soort ?? '',
         ];
     }
 }

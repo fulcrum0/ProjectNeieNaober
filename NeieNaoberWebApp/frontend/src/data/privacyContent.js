@@ -9,8 +9,8 @@ export const privacySections = [
             {
                 type: "table",
                 rows: [
-                    ["Vrijwilliger", "Voornaam, achternaam en e-mailadres."],
-                    ["Optionele gegevens", "Telefoonnummer en activiteit, als de organisatie deze invult."],
+                    ["Vrijwilliger", "Voornaam, tussenvoegsel en achternaam, en een e-mailadres of telefoonnummer."],
+                    ["Optionele gegevens", "Geboortedatum en adres, als de organisatie deze invult."],
                     ["Registratie", "De gekoppelde organisatie en het registratiejaar."],
                     ["Toestemming en controle", "De toestemmingsbevestiging en review- en auditgegevens, zoals status, controlemomenten en interne beoordelingsnotities."],
                 ],

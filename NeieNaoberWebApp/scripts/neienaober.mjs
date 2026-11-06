@@ -143,12 +143,10 @@ function SetupBackend()
 
     if (!existsSync(join(BACKEND, '.env')))
     {
-        // Zonder instellingen werkt het meteen met SQLite (één bestand). Wil je MySQL (TO)? Pas dan .env aan.
+        // Zonder instellingen werkt het meteen met SQLite (één bestand). Wil je MySQL? Pas dan .env aan.
         copyFileSync(join(BACKEND, '.env.example'), join(BACKEND, '.env'));
-        const sqlite = join(BACKEND, 'database', 'database.sqlite');
-        writeFileSync(sqlite, '', { flag: 'a' });
         SchrijfEnvWaarde('DB_CONNECTION', 'sqlite');
-        SchrijfEnvWaarde('DB_DATABASE', sqlite);
+        SchrijfEnvWaarde('DB_DATABASE', join(BACKEND, 'database', 'database.sqlite'));
         Goed('.env gemaakt (met SQLite, zodat je niets hoeft in te stellen)');
     }
     else
@@ -156,12 +154,21 @@ function SetupBackend()
         Goed(`.env gevonden (database: ${LeesEnv().match(/^DB_CONNECTION=(.*)$/m)?.[1] ?? '?'})`);
     }
 
+    // SQLite: het databasebestand moet bestaan voordat Laravel het kan vullen
+    if (/^DB_CONNECTION=sqlite$/m.test(LeesEnv()))
+    {
+        const bestand = LeesEnv().match(/^DB_DATABASE=(.+)$/m)?.[1]?.trim() || join(BACKEND, 'database', 'database.sqlite');
+        writeFileSync(bestand, '', { flag: 'a' });
+    }
+
     if (!/^APP_KEY=.+$/m.test(LeesEnv()))
     {
         DraaiOfStop('APP_KEY gemaakt', 'php', ['artisan', 'key:generate', '--force'], BACKEND);
     }
 
-    DraaiOfStop('Database bijgewerkt (migraties + testgegevens)', 'php', ['artisan', 'migrate', '--seed', '--force'], BACKEND,
+    // Alleen vullen als de database nog leeg is, anders komen de testgegevens er dubbel in
+    const leeg = Draai('php', ['artisan', 'migrate:status'], BACKEND).uitvoer.includes('Migration table not found');
+    DraaiOfStop(leeg ? 'Database gemaakt (migraties + testgegevens)' : 'Database bijgewerkt (migraties)', 'php', ['artisan', 'migrate', '--force', ...(leeg ? ['--seed'] : [])], BACKEND,
         'Klopt de database in .env? Bij MySQL: bestaat de database "neienaober" en draait MySQL?');
 }
 
@@ -267,7 +274,7 @@ class Browser
     {
         await this.Vraag('GET', '/sanctum/csrf-cookie');
 
-        return this.Vraag('POST', '/api/login', { email, wachtwoord: 'Wachtwoord1234' });
+        return this.Vraag('POST', '/api/login', { email, password: 'password123' });
     }
 }
 
@@ -312,33 +319,28 @@ async function RookTest()
         Goed('Backend gestart');
 
         const gast = new Browser(basis);
-        await Verwacht('GET /api/periode geeft de open periode', gast.Vraag('GET', '/api/periode'), (a) => a.status === 200 && a.data?.data?.open === true);
-        await Verwacht('Niet ingelogd → 401', gast.Vraag('GET', '/api/ik'), (a) => a.status === 401);
-        await Verwacht('"Ben ik al aangemeld?" geeft alleen ja/nee',
-            gast.Vraag('POST', '/api/ben-ik-aangemeld', { voornaam: 'Anna', achternaam: 'Testman', postcode: '9481 AB', huisnummer: '12' }),
-            (a) => a.status === 200 && a.data?.aangemeld === true && Object.keys(a.data).length === 2);
+        await Verwacht('Niet ingelogd → 401', gast.Vraag('GET', '/api/user'), (a) => a.status === 401);
 
         const fout = new Browser(basis);
         await fout.Vraag('GET', '/sanctum/csrf-cookie');
-        await Verwacht('Fout wachtwoord → nette melding', fout.Vraag('POST', '/api/login', { email: 'a@organisatie.nl', wachtwoord: 'fout' }),
+        await Verwacht('Fout wachtwoord → nette melding', fout.Vraag('POST', '/api/login', { email: 'a@organisatie.nl', password: 'fout' }),
             (a) => a.status === 422 && a.data?.errors?.email?.[0] === 'E-mail of wachtwoord klopt niet.');
 
         const organisatie = new Browser(basis);
-        await Verwacht('Inloggen als organisatie', organisatie.Login('a@organisatie.nl'), (a) => a.status === 200 && a.data?.data?.rol === 'organisatie');
-        await Verwacht('Eigen lijst ophalen', organisatie.Vraag('GET', '/api/mijn/vrijwilligers'), (a) => a.status === 200 && Array.isArray(a.data?.data));
-        await Verwacht('Foute postcode → 422 in gewone taal',
-            organisatie.Vraag('POST', '/api/mijn/vrijwilligers', { voornaam: 'Test', achternaam: 'Check', straat: 'Brink', huisnummer: '1', postcode: '123', woonplaats: 'Vries' }),
-            (a) => a.status === 422 && a.data?.errors?.postcode?.[0] === 'Vul een postcode in zoals 9481 AB.');
-        await Verwacht('Organisatie mag niet in VIP!-deel → 403', organisatie.Vraag('GET', '/api/vip/aanmeldingen'), (a) => a.status === 403);
-        await Verwacht('Eigen lijst als Excel', organisatie.Vraag('GET', '/api/mijn/export'), (a) => a.status === 200 && a.type.includes('spreadsheetml'));
+        await Verwacht('Inloggen als organisatie', organisatie.Login('a@organisatie.nl'), (a) => a.status === 200 && a.data?.role === 'organisation');
+        await Verwacht('Sessie blijft bestaan (GET /api/user)', organisatie.Vraag('GET', '/api/user'), (a) => a.status === 200 && a.data?.email === 'a@organisatie.nl');
+        await Verwacht('Ziet alleen de eigen organisatie', organisatie.Vraag('GET', '/api/organisations'), (a) => a.status === 200 && a.data?.length === 1);
+        await Verwacht('Eigen vrijwilligers ophalen', organisatie.Vraag('GET', '/api/volunteers'), (a) => a.status === 200 && Array.isArray(a.data));
+        await Verwacht('Ongeldig e-mailadres → 422',
+            organisatie.Vraag('POST', '/api/volunteers', { firstName: 'Test', lastName: 'Check', email: 'geen-mail' }),
+            (a) => a.status === 422 && Boolean(a.data?.errors?.email));
+        await Verwacht('Organisatie mag geen organisaties verwijderen → 403', organisatie.Vraag('DELETE', '/api/organisations', { ids: [1] }), (a) => a.status === 403);
         await Verwacht('Uitloggen', organisatie.Vraag('POST', '/api/logout'), (a) => a.status === 204);
 
-        const medewerker = new Browser(basis);
-        await Verwacht('Inloggen als medewerker VIP!', medewerker.Login('medewerker@vip.tynaarlo.nl'), (a) => a.status === 200 && a.data?.data?.rol === 'medewerker');
-        await Verwacht('Overzicht aanmeldingen (50 per pagina)', medewerker.Vraag('GET', '/api/vip/aanmeldingen'), (a) => a.status === 200 && a.data?.meta?.per_page === 50);
-        await Verwacht('Mogelijk dubbele aanmeldingen te filteren', medewerker.Vraag('GET', '/api/vip/aanmeldingen?dubbel=1'), (a) => a.status === 200 && a.data?.data?.length >= 2);
-        await Verwacht('Export met niet-gecontroleerde aanmeldingen waarschuwt', medewerker.Vraag('GET', '/api/vip/export?periode_id=1'), (a) => a.status === 422);
-        await Verwacht('Medewerker mag niet beheren → 403', medewerker.Vraag('POST', '/api/beheer/periodes', {}), (a) => a.status === 403);
+        const beheerder = new Browser(basis);
+        await Verwacht('Inloggen als beheerder', beheerder.Login('lorem@vip.tynaarlo.nl'), (a) => a.status === 200 && a.data?.role === 'admin');
+        await Verwacht('Alle organisaties ophalen', beheerder.Vraag('GET', '/api/organisations'), (a) => a.status === 200 && a.data?.length >= 2);
+        await Verwacht('Alle vrijwilligers ophalen', beheerder.Vraag('GET', '/api/volunteers'), (a) => a.status === 200 && a.data?.length >= 1);
     }
     finally
     {
@@ -365,8 +367,8 @@ function Samenvatting()
 
 function Testaccounts()
 {
-    console.log(`\n${KLEUR.blauw}Testaccounts${KLEUR.uit} (wachtwoord voor allemaal: Wachtwoord1234)`);
-    console.log('  lorem@vip.tynaarlo.nl (beheerder) · medewerker@vip.tynaarlo.nl · a@organisatie.nl · b@organisatie.nl');
+    console.log(`\n${KLEUR.blauw}Testaccounts${KLEUR.uit} (wachtwoord voor allemaal: password123)`);
+    console.log('  lorem@vip.tynaarlo.nl (beheerder) · a@organisatie.nl · b@organisatie.nl');
 }
 
 async function Check()
@@ -410,7 +412,7 @@ function Dev()
     SetupFrontend();
     Testaccounts();
 
-    console.log(`\n${KLEUR.groen}Backend:  http://localhost:${BACKEND_POORT}/api/periode${KLEUR.uit}`);
+    console.log(`\n${KLEUR.groen}Backend:  http://localhost:${BACKEND_POORT}${KLEUR.uit}`);
     console.log(`${KLEUR.groen}Frontend: http://localhost:5173${KLEUR.uit}`);
     console.log(`${KLEUR.grijs}Stoppen: Ctrl+C${KLEUR.uit}\n`);
 

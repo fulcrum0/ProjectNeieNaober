@@ -14,15 +14,15 @@ class Organisatie extends Model
     // Laravel raadt tabelnamen met Engelse regels; bij Nederlandse namen zetten we hem zelf vast
     protected $table = 'organisaties';
 
-    protected $fillable = ['naam', 'plaats'];
+    protected $fillable = ['naam', 'telefoon', 'email', 'locatie', 'soort'];
 
     public function gebruiker(): HasOne
     {
         return $this->hasOne(Gebruiker::class, 'organisatie_id');
     }
 
-    public function aanmeldingen(): HasMany
+    public function vrijwilligers(): HasMany
     {
-        return $this->hasMany(Aanmelding::class, 'organisatie_id');
+        return $this->hasMany(Vrijwilliger::class, 'organisatie_id');
     }
 }

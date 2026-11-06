@@ -11,13 +11,13 @@ return new class extends Migration
         Schema::create('gebruikers', function (Blueprint $table)
         {
             $table->id();
-            // Uniek: één account per organisatie. Medewerkers en beheerders hebben geen organisatie.
-            $table->foreignId('organisatie_id')->nullable()->unique()->constrained('organisaties');
+            // Eén account per organisatie; de beheerder (VIP!) heeft geen organisatie.
+            // Wordt de organisatie verwijderd, dan gaat het account mee.
+            $table->foreignId('organisatie_id')->nullable()->unique()->constrained('organisaties')->cascadeOnDelete();
             $table->string('naam', 100);
             $table->string('email')->unique();
             $table->string('wachtwoord');
-            $table->enum('rol', ['organisatie', 'medewerker', 'beheerder'])->default('organisatie');
-            $table->boolean('actief')->default(true);
+            $table->enum('rol', ['beheerder', 'organisatie'])->default('organisatie');
             $table->timestamps();
         });
     }

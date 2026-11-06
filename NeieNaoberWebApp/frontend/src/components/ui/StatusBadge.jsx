@@ -1,5 +1,7 @@
-import { STATUS_LABELS } from "../../data/constants";
+import { isConcept } from "../../helpers/volunteerUtils";
 
-export default function StatusBadge({ status }) {
-    return <span className={`badge badge--${status}`}>{STATUS_LABELS[status] ?? status}</span>;
+export default function StatusBadge({ volunteer }) {
+    return isConcept(volunteer)
+        ? <span className="badge badge--concept">Concept</span>
+        : <span className="badge badge--sent">Verstuurd</span>;
 }

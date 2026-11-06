@@ -1,53 +1,92 @@
 # Neie Naober – backend (Laravel API)
 
-JSON-API voor de vrijwilligersregistratie van VIP! Tynaarlo (horecabon).
-Gebouwd volgens het **Technisch Ontwerp v0.3** en het **Functioneel Ontwerp v0.2**.
+JSON-API voor de vrijwilligersregistratie van VIP! Tynaarlo. De API levert precies wat de frontend nodig heeft:
+inloggen, organisaties, vrijwilligers en het versturen van vrijwilligers naar VIP! Tynaarlo (gemeente).
 
-**Stack:** PHP 8.4 · Laravel 13 · Sanctum (sessie-cookie) · PhpSpreadsheet 5 · MySQL 8.4 / MariaDB
+## Regels
+
+- **Versturen.** Een vrijwilliger die een organisatie registreert is eerst een *concept*: alleen die organisatie ziet hem.
+  Op de pagina "Gegevens versturen" stuurt de organisatie haar concepten naar VIP! Tynaarlo. Pas dan ziet de beheerder ze.
+  Verstuurde vrijwilligers kan de organisatie niet meer verwijderen (de beheerder wel).
+  Wat de beheerder zelf toevoegt of importeert, is meteen verstuurd.
+- **Dubbel-check.** Binnen één organisatie mag dezelfde persoon maar één keer voorkomen. Dezelfde persoon =
+  hetzelfde e-mailadres, óf dezelfde voornaam, achternaam en geboortedatum (hoofdletters tellen niet).
+  Bij een andere organisatie mag het wel. Het formulier waarschuwt meteen; de API weigert met 422;
+  de Excel-import slaat dubbelen over (ook dubbelen binnen hetzelfde bestand).
+
+**Stack:** PHP 8.4 · Laravel 13 · Sanctum (sessie-cookie) · MySQL of SQLite
 
 ## Snel: één commando
 
 Vanuit de map `NeieNaoberWebApp`:
 
 ```bash
-npm run check   # alles installeren + 54 tests + de API echt aanroepen + frontend bouwen
-npm run dev     # backend (:8000) en frontend (:5173) samen starten
+npm run setup   # alles installeren + database klaarzetten (met testgegevens)
+npm run dev     # backend (:8000) en frontend (:5173) samen starten → open http://localhost:5173
+npm run check   # setup + tests + de API echt aanroepen + frontend bouwen
 npm run reset   # database leeg en opnieuw vullen met testgegevens
 ```
 
-Zonder `.env` gebruikt het script SQLite, zodat je niets hoeft in te stellen.
-Wil je MySQL (zoals in het TO)? Zet dan `DB_CONNECTION=mysql` en de gegevens in `backend/.env`.
+Zonder `backend/.env` gebruikt het script SQLite, zodat je niets hoeft in te stellen.
+Wil je MySQL? Maak een lege database `neienaober` en zet `DB_CONNECTION=mysql` en de gegevens in `backend/.env`.
 
 ## Lokaal starten (stap voor stap)
 
 ```bash
 cd NeieNaoberWebApp/backend
 composer install
-cp .env.example .env          # DB_DATABASE, DB_USERNAME, DB_PASSWORD invullen
+cp .env.example .env               # DB_DATABASE, DB_USERNAME, DB_PASSWORD invullen
 php artisan key:generate
-php artisan migrate:fresh --seed   # 7 tabellen + nep-testgegevens
+php artisan migrate:fresh --seed   # tabellen + testgegevens
 php artisan serve                  # http://localhost:8000
+
+cd ../frontend
+npm install
+npm run dev                        # http://localhost:5173
 ```
 
-Maak eerst een lege database `neienaober` in MySQL.
-
-### Testaccounts (alleen nep-gegevens uit de seeder)
+### Testaccounts (nep-gegevens uit de seeder, dezelfde als de oude mockData)
 
 | Rol | E-mail | Wachtwoord |
 |---|---|---|
-| beheerder | lorem@vip.tynaarlo.nl | Wachtwoord1234 |
-| medewerker | medewerker@vip.tynaarlo.nl | Wachtwoord1234 |
-| organisatie | a@organisatie.nl, b@organisatie.nl | Wachtwoord1234 |
+| beheerder (admin) | lorem@vip.tynaarlo.nl | password123 |
+| organisatie | a@organisatie.nl, b@organisatie.nl | password123 |
 
-Dezelfde accounts en vrijwilligers als in `frontend/src/data/mockData.js`.
+## Hoe de frontend met de API praat
 
-Een echte beheerder maak je met `php artisan app:maak-beheerder` (of `--rol=medewerker`).
+- `frontend/src/services/api.js` doet alle verzoeken (sessie-cookie + XSRF-token).
+- `frontend/src/context/AuthContext.jsx` en `DataContext.jsx` halen de gegevens uit de API; de pagina's en componenten zijn gelijk aan v1.0.
+- `frontend/vite.config.js` stuurt `/api` en `/sanctum` door naar `localhost:8000`, dus voor de browser is het één domein.
+- Excel-import en -export gebeuren in de browser (zoals in v1.0); de API krijgt alleen de rijen.
 
-### De React-app
+## Database
 
-De frontend praat alleen via `frontend/src/services/ApiClient.js` met deze API (cookie + XSRF-token, 401/419/422).
-`frontend/vite.config.js` stuurt `/api` en `/sanctum` door naar `localhost:8000`, dus lokaal is het één domein (TO 7).
-`npm run build` zet de React-build in `backend/public/app`; Laravel geeft die zelf aan de browser.
+| Tabel | Kolommen | In de frontend |
+|---|---|---|
+| organisaties | naam (uniek), telefoon, email, locatie, soort | name, phone, email, location, type |
+| gebruikers | organisatie_id, naam, email, wachtwoord, rol (`beheerder`/`organisatie`) | name, email, initials, role (`admin`/`organisation`), orgId |
+| vrijwilligers | organisatie_id, voornaam, achternaam, email, telefoon, geboortedatum, straat, huisnummer, toevoeging, postcode, verstuurd_op | orgId, firstName, lastName, email, phone, birthDate, street, houseNumber, addition, postcode, createdAt, sentAt (`""` = concept) |
+
+Verwijder je een organisatie, dan gaan haar account en vrijwilligers mee (CASCADE).
+Ids gaan als tekst naar de frontend, omdat die ze vergelijkt met ids uit de URL.
+
+## Endpoints
+
+Alles is JSON en begint met `/api`. Een fout in een formulier geeft **422** met `errors` per veld, in gewone taal.
+
+| Methode | Pad | Wie | Wat |
+|---|---|---|---|
+| POST | /login | iedereen (5/min per e-mail) | `email`, `password` → gebruiker |
+| GET | /user | ingelogd | wie ben ik? (401 als niet ingelogd) |
+| POST | /logout | ingelogd | 204 |
+| GET | /organisations | ingelogd | beheerder: alle; organisatie: alleen zichzelf |
+| POST | /organisations/import | beheerder | `organisations: [{name, location, …}]`; lege en bestaande namen worden overgeslagen |
+| DELETE | /organisations | beheerder | `ids: [...]` |
+| GET | /volunteers | ingelogd | beheerder: alleen verstuurde; organisatie: alle eigen (ook concepten) |
+| POST | /volunteers | ingelogd | velden van het formulier, met dubbel-check; organisatie maakt een concept, beheerder geeft `orgId` mee |
+| POST | /volunteers/send | organisatie | `ids: [...]` → eigen concepten worden verstuurd naar VIP! |
+| POST | /volunteers/import | beheerder | `volunteers: [{orgId, firstName, …}]`; ongeldige rijen worden overgeslagen |
+| DELETE | /volunteers | ingelogd | `ids: [...]`; een organisatie kan alleen eigen concepten verwijderen (verstuurd → 422) |
 
 ## Tests
 
@@ -55,61 +94,4 @@ De frontend praat alleen via `frontend/src/services/ApiClient.js` met deze API (
 php artisan test
 ```
 
-54 feature-tests: inloggen en rollen, max. 3 aanmeldingen, dubbel-check, versturen met verklaring,
-export (alleen goedgekeurd, alles als tekst, 3000 rijen < 10 s), sjablonen, beheer, openbaar en de AVG-opruiming.
 De tests gebruiken SQLite in het geheugen, dus je echte database blijft leeg.
-
-## Endpoints
-
-Alles is JSON, alle paden beginnen met `/api`, lijsten hebben 50 rijen per pagina (`?page=2`).
-Een fout in een formulier geeft **422** met `errors` per veld, in gewone taal.
-
-| Methode | Pad | Wie | Wat |
-|---|---|---|---|
-| POST | /login | iedereen (5/min per e-mail) | `email`, `wachtwoord` → naam, rol, organisatie |
-| GET | /ik | ingelogd | wie ben ik? |
-| POST | /logout | ingelogd | 204 |
-| POST | /wachtwoord | iedereen (5/min) | `token`, `email`, `wachtwoord`, `wachtwoord_confirmation` |
-| POST | /wachtwoord-vergeten | iedereen (5/min) | Could: link per mail |
-| GET | /periode | iedereen | de open aanmeldperiode (of `null`) |
-| POST | /zelf-aanmelden | iedereen (10/min) | vrijwilliger + `organisatie_naam` + `akkoord_privacy` → status nieuw |
-| POST | /ben-ik-aangemeld | iedereen (10/min) | `voornaam`, `achternaam`, `postcode`, `huisnummer` → alleen ja/nee |
-| GET | /mijn/vrijwilligers | organisatie | eigen lijst van de open periode |
-| POST | /mijn/vrijwilligers | organisatie | nieuwe aanmelding, status concept |
-| GET/PUT/DELETE | /mijn/vrijwilligers/{id} | organisatie | alleen eigen; wijzigen alleen bij concept |
-| POST | /mijn/vrijwilligers/upload | organisatie | Could: .xlsx of .csv, alles-of-niets |
-| POST | /mijn/versturen | organisatie | `akkoord_privacy`, `naam_invuller` → concept wordt nieuw |
-| GET | /mijn/export | organisatie | Should: eigen lijst als .xlsx |
-| GET | /vip/aanmeldingen | medewerker, beheerder | `?periode, organisatie, status, dubbel, zoek, page` |
-| GET | /vip/aanmeldingen/{id} | medewerker, beheerder | detail + `mogelijke_dubbels` om te vergelijken |
-| PUT | /vip/aanmeldingen/{id} | medewerker, beheerder | gegevens aanpassen |
-| PATCH | /vip/aanmeldingen/{id}/status | medewerker, beheerder | `goedgekeurd` of `afgekeurd` |
-| GET | /vip/overzicht | medewerker, beheerder | aantallen voor het dashboard (open periode) |
-| GET | /vip/organisaties | medewerker, beheerder | met aantallen (`?zoek=`, `?periode=`) |
-| GET | /vip/organisaties/{id} | medewerker, beheerder | één organisatie met aantallen |
-| GET | /vip/periodes | medewerker, beheerder | alle periodes |
-| GET | /vip/export | medewerker, beheerder | `?periode_id=&doorgaan=1` → .xlsx in het actieve sjabloon |
-| GET/POST | /vip/sjablonen | medewerker, beheerder | lijst / uploaden (.xlsx, max. 2 MB) |
-| PUT/DELETE | /vip/sjablonen/{id} | medewerker, beheerder | `kolommen` (`{"A":"achternaam"}`), `actief` |
-| POST | /beheer/organisaties | beheerder | `naam`, `plaats`, `email` → account + uitnodiging |
-| POST | /beheer/organisaties/{id}/uitnodiging | beheerder | nieuwe link sturen |
-| POST | /beheer/periodes | beheerder | `naam`, `startdatum`, `einddatum` (niet overlappen) |
-| DELETE | /beheer/periodes/{id}/gegevens | beheerder | `bevestiging: "VERWIJDER"` |
-
-## Keuzes die niet letterlijk in het TO staan
-
-- **Eén vrijwilliger-record per aanmelding.** Zo kan organisatie A nooit de gegevens van organisatie B veranderen.
-  "Dezelfde persoon" (voor max. 3) = zelfde voornaam, achternaam, postcode en huisnummer. Afgekeurd telt niet mee.
-- **Mogelijk dubbel** wordt steeds opnieuw berekend: keurt VIP! er één af, dan gaat de vlag bij de ander uit.
-- **Export met niet-gecontroleerde aanmeldingen** geeft eerst 422 met een waarschuwing; met `doorgaan=1` gaat het toch (FO UC-4, 3a).
-- **Zelf aangemeld** krijgt geen verklaring (de tabel vraagt een organisatie_id); het vinkje is wel verplicht.
-- **AVG-opruiming** verwijdert vrijwilligers (aanmeldingen gaan mee door CASCADE). In `verklaringen` blijven datum en versie
-  als bewijs, maar de naam van de invuller wordt `(verwijderd)`.
-- Extra endpoints: `GET /periode`, `GET /vip/periodes`, `GET /vip/aanmeldingen/{id}`, `GET`/`DELETE /vip/sjablonen`,
-  `/beheer/organisaties/{id}/uitnodiging`, `/wachtwoord-vergeten`. Die had de frontend nodig.
-
-## Online zetten (alwaysdata)
-
-Zie TO 7.2. Daarnaast in `.env` op de server: `APP_ENV=production`, `APP_DEBUG=false`, `SESSION_SECURE_COOKIE=true`,
-`SANCTUM_STATEFUL_DOMAINS=<jouwnaam>.alwaysdata.net`. Geplande taak: `0 2 * * * php artisan app:verwijder-gegevens`.
-De React-build komt in `public/app`; Laravel geeft dan zelf `index.html` voor elke pagina die geen `/api` is.

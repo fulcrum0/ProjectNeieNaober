@@ -2,105 +2,135 @@
 
 namespace App\Http\Requests;
 
-use Illuminate\Foundation\Http\FormRequest;
 use App\Models\Vrijwilliger;
-use Illuminate\Validation\Rule;
+use Closure;
+use Illuminate\Foundation\Http\FormRequest;
+use Illuminate\Validation\Validator;
 
+// Dezelfde velden als het formulier in de frontend (VolunteerForm.jsx)
 class VrijwilligerRequest extends FormRequest
 {
-    public function authorize(): bool
-    {
-        // Wie wat mag, regelen de middleware en de policy
-        return true;
-    }
+    // Letters (ook met accenten), spaties, apostrof, punt en streepje: "van 't Hof", "Anne-Marie"
+    private const NAAM = "/^\\p{L}[\\p{L}\\s'.-]*$/u";
 
-    // Eerst netjes maken, dan controleren (TO 6: spaties weg, postcode in hoofdletters)
-    protected function prepareForValidation(): void
-    {
-        $this->merge(self::Opschonen($this->all()));
-    }
+    // Mag met een apostrof beginnen: "van der", "'t", "in 't"
+    private const TUSSENVOEGSEL = "/^[\\p{L}\\s'.-]+$/u";
+
+    public const DUBBEL_MELDINGEN = [
+        'email' => 'Deze vrijwilliger is al geregistreerd bij deze organisatie (zelfde e-mailadres).',
+        'birthDate' => 'Deze vrijwilliger is al geregistreerd bij deze organisatie (zelfde naam en geboortedatum).',
+    ];
 
     public function rules(): array
     {
-        return self::Regels();
+        return [
+            // Een organisatie registreert altijd voor zichzelf; alleen de beheerder kiest de organisatie
+            'orgId' => [$this->user()->IsBeheerder() ? 'required' : 'nullable', 'integer', 'exists:organisaties,id'],
+            ...self::Velden(),
+            // Strenger dan de Excel-import; dezelfde controles als in het formulier (helpers/validators.js)
+            'firstName' => ['required', 'string', 'max:50', 'regex:' . self::NAAM],
+            'infix' => ['nullable', 'string', 'max:20', 'regex:' . self::TUSSENVOEGSEL],
+            'lastName' => ['required', 'string', 'max:100', 'regex:' . self::NAAM],
+            // Minstens één manier om de vrijwilliger te bereiken: niet iedereen heeft e-mail
+            'email' => ['required_without:phone', 'nullable', 'string', 'email', 'max:255'],
+            'birthDate' => ['nullable', 'date', 'after_or_equal:1900-01-01', 'before_or_equal:today'],
+            'phone' => ['required_without:email', 'nullable', 'string', 'max:20', 'regex:/^\+?[0-9 -]+$/', function (string $veld, mixed $waarde, Closure $fout)
+            {
+                $cijfers = strlen(preg_replace('/\D/', '', $waarde));
+
+                if ($cijfers < 10 || $cijfers > 15)
+                {
+                    $fout('Vul een geldig telefoonnummer in, bijvoorbeeld 06 1234 5678.');
+                }
+            }],
+            'houseNumber' => ['nullable', 'string', 'max:5', 'regex:/^[0-9]+$/'],
+            'postcode' => ['nullable', 'string', 'regex:/^[1-9][0-9]{3} ?[A-Za-z]{2}$/'],
+        ];
     }
 
+    // Een organisatie registreert altijd voor zichzelf; alleen de beheerder kiest de organisatie
+    public function OrganisatieId(): int
+    {
+        return $this->user()->IsBeheerder() ? $this->integer('orgId') : $this->user()->organisatie_id;
+    }
+
+    // Dubbel-check, pas als alle velden verder goed zijn
+    public function after(): array
+    {
+        return [
+            function (Validator $validator)
+            {
+                if ($validator->errors()->isNotEmpty())
+                {
+                    return;
+                }
+
+                $veld = Vrijwilliger::DubbelVeld($this->OrganisatieId(), self::NaarKolommen($validator->validated()));
+
+                if ($veld)
+                {
+                    $validator->errors()->add($veld, self::DUBBEL_MELDINGEN[$veld]);
+                }
+            },
+        ];
+    }
+
+    // Dezelfde meldingen als in het formulier
     public function messages(): array
     {
-        return self::Meldingen();
-    }
-
-    // Static, zodat de Excel-upload en zelf aanmelden precies dezelfde regels gebruiken
-    public static function Regels(): array
-    {
         return [
-            'aanhef' => ['nullable', Rule::in(['dhr.', 'mevr.'])],
-            'voornaam' => ['required', 'string', 'max:50', 'not_regex:/^(dhr|mevr)\b/i'],
-            'tussenvoegsel' => ['nullable', 'string', 'max:20'],
-            'achternaam' => ['required', 'string', 'max:100'],
-            'straat' => ['required', 'string', 'max:100'],
-            'huisnummer' => ['required', 'string', 'max:10', 'regex:/^[1-9][0-9]*/'],
-            'postcode' => ['required', 'string', 'regex:/^[1-9][0-9]{3}[A-Z]{2}$/'],
-            'woonplaats' => ['required', 'string', 'max:80'],
-        ];
-    }
-
-    public static function Meldingen(): array
-    {
-        return [
-            'aanhef.in' => 'Kies dhr. of mevr. als aanhef, of laat het leeg.',
+            'firstName.regex' => 'Een voornaam bevat alleen letters.',
+            'infix.regex' => 'Een tussenvoegsel bevat alleen letters, zoals "van der".',
+            'lastName.regex' => 'Een achternaam bevat alleen letters.',
+            'email.required_without' => 'Vul een e-mailadres of telefoonnummer in.',
+            'phone.required_without' => 'Vul een e-mailadres of telefoonnummer in.',
+            'birthDate.after_or_equal' => 'Vul een geldige geboortedatum in (niet in de toekomst).',
+            'birthDate.before_or_equal' => 'Vul een geldige geboortedatum in (niet in de toekomst).',
+            'phone.regex' => 'Vul een geldig telefoonnummer in, bijvoorbeeld 06 1234 5678.',
+            'houseNumber.regex' => 'Een huisnummer bevat alleen cijfers. Letters horen bij de toevoeging.',
             'postcode.regex' => 'Vul een postcode in zoals 9481 AB.',
-            'voornaam.not_regex' => 'Zet dhr. of mevr. niet bij de voornaam. Kies de aanhef.',
-            'huisnummer.regex' => 'Vul een huisnummer in dat begint met een cijfer, zoals 12 of 12a.',
         ];
     }
 
-    public static function Opschonen(array $invoer): array
+    // Ook gebruikt door de Excel-import, waar alleen de voornaam verplicht is (zoals in v1.0)
+    public static function Velden(): array
     {
-        $schoon = [];
-
-        foreach (Vrijwilliger::VELDEN as $veld)
-        {
-            if (! array_key_exists($veld, $invoer))
-            {
-                continue;
-            }
-
-            $waarde = $invoer[$veld];
-
-            if (is_string($waarde) || is_numeric($waarde))
-            {
-                // Dubbele spaties uit Excel of kopiëren-plakken weghalen
-                $waarde = preg_replace('/\s+/u', ' ', trim((string) $waarde));
-            }
-
-            if ($waarde === '')
-            {
-                $waarde = null;
-            }
-
-            $schoon[$veld] = $waarde;
-        }
-
-        if (isset($schoon['postcode']))
-        {
-            // De database slaat de postcode op zonder spatie, bijvoorbeeld 9481AB
-            $schoon['postcode'] = strtoupper(str_replace(' ', '', $schoon['postcode']));
-        }
-
-        if (isset($schoon['aanhef']))
-        {
-            $schoon['aanhef'] = self::AanhefNetjes($schoon['aanhef']);
-        }
-
-        return $schoon;
+        return [
+            'firstName' => ['required', 'string', 'max:50'],
+            'infix' => ['nullable', 'string', 'max:20'],
+            'lastName' => ['nullable', 'string', 'max:100'],
+            'email' => ['nullable', 'string', 'email', 'max:255'],
+            'phone' => ['nullable', 'string', 'max:30'],
+            'birthDate' => ['nullable', 'date', 'before_or_equal:today'],
+            'street' => ['nullable', 'string', 'max:100'],
+            'houseNumber' => ['nullable', 'string', 'max:10'],
+            'addition' => ['nullable', 'string', 'max:10'],
+            'postcode' => ['nullable', 'string', 'max:10'],
+        ];
     }
 
-    // "Dhr", "dhr." en "DHR." betekenen hetzelfde; in de database mag alleen "dhr." of "mevr."
-    private static function AanhefNetjes(string $aanhef): string
+    // Van de namen in de frontend naar de kolommen in de database
+    public static function NaarKolommen(array $gegevens): array
     {
-        $kort = rtrim(strtolower($aanhef), '.');
+        return [
+            'voornaam' => self::Hoofdletter($gegevens['firstName']),
+            'tussenvoegsel' => filled($gegevens['infix'] ?? null) ? mb_strtolower(trim($gegevens['infix'])) : null,
+            'achternaam' => isset($gegevens['lastName']) ? self::Hoofdletter($gegevens['lastName']) : null,
+            'email' => isset($gegevens['email']) ? strtolower(trim($gegevens['email'])) : null,
+            'telefoon' => $gegevens['phone'] ?? null,
+            'geboortedatum' => $gegevens['birthDate'] ?? null,
+            'straat' => $gegevens['street'] ?? null,
+            'huisnummer' => $gegevens['houseNumber'] ?? null,
+            'toevoeging' => $gegevens['addition'] ?? null,
+            'postcode' => isset($gegevens['postcode']) ? strtoupper(str_replace(' ', '', $gegevens['postcode'])) : null,
+        ];
+    }
 
-        return in_array($kort, ['dhr', 'mevr'], true) ? $kort . '.' : $aanhef;
+    // Typen mag in kleine letters; opgeslagen wordt met een hoofdletter: "jan" -> "Jan"
+    private static function Hoofdletter(string $tekst): string
+    {
+        $tekst = trim($tekst);
+
+        return mb_strtoupper(mb_substr($tekst, 0, 1)) . mb_substr($tekst, 1);
     }
 }

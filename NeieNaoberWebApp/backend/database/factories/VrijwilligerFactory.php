@@ -2,6 +2,7 @@
 
 namespace Database\Factories;
 
+use App\Models\Organisatie;
 use Illuminate\Database\Eloquent\Factories\Factory;
 
 class VrijwilligerFactory extends Factory
@@ -9,14 +10,16 @@ class VrijwilligerFactory extends Factory
     public function definition(): array
     {
         return [
-            'aanhef' => fake()->randomElement(['dhr.', 'mevr.', null]),
+            'organisatie_id' => Organisatie::factory(),
             'voornaam' => fake()->firstName(),
-            'tussenvoegsel' => fake()->optional(0.3)->randomElement(['van', 'de', 'van der', 'ter']),
             'achternaam' => fake()->lastName(),
+            'email' => fake()->unique()->safeEmail(),
+            'telefoon' => fake()->optional()->phoneNumber(),
+            'geboortedatum' => fake()->optional()->date(max: '-16 years'),
             'straat' => fake()->streetName(),
             'huisnummer' => (string) fake()->numberBetween(1, 250),
+            'toevoeging' => null,
             'postcode' => fake()->numberBetween(9400, 9499) . fake()->randomElement(['AB', 'CD', 'EF', 'GH', 'JK']),
-            'woonplaats' => fake()->randomElement(['Vries', 'Zuidlaren', 'Eelde', 'Paterswolde', 'Tynaarlo']),
         ];
     }
 }

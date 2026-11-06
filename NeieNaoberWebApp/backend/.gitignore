@@ -27,4 +27,3 @@ Homestead.yaml
 Thumbs.db
 /database/*.sqlite
 /composer.local.json
-/public/app

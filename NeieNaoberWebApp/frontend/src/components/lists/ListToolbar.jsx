@@ -1,28 +1,36 @@
-import { useState } from "react";
-import { Search } from "lucide-react";
+import { useRef } from "react";
+import { Search, Download, Upload } from "lucide-react";
 import Button from "../ui/Button";
+import { readExcelRows } from "../../helpers/importExcel";
 
-// Zoeken gebeurt op de server (alle pagina's), daarom pas na Enter of de knop "Zoeken"
-export default function ListToolbar({ placeholder, query, onSearch, children }) {
-    const [text, setText] = useState(query || "");
+export default function ListToolbar({ placeholder, query, onQuery, onExport, onImport }) {
+    const fileRef = useRef(null);
 
-    const submit = (e) => {
-        e.preventDefault();
-        onSearch(text.trim());
+    const handleFile = async (e) => {
+        const file = e.target.files[0];
+        if (file) onImport(await readExcelRows(file));
+        e.target.value = "";
     };
 
     return (
         <div className="table-toolbar">
-            <form className="table-toolbar__search" onSubmit={submit} role="search">
-                <div className="table-toolbar__actions">
-                    <label className="search">
-                        <Search size={18} />
-                        <input placeholder={placeholder} aria-label={placeholder} value={text} onChange={(e) => setText(e.target.value)} />
-                    </label>
-                    <Button type="submit" variant="outline">Zoeken</Button>
-                </div>
-            </form>
-            {children && <div className="table-toolbar__actions">{children}</div>}
+            <div className="search">
+                <Search size={18} />
+                <input placeholder={placeholder} value={query} onChange={(e) => onQuery(e.target.value)} />
+            </div>
+            <div className="table-toolbar__actions">
+                {onImport && (
+                    <>
+                        <Button variant="outline" icon={Download} onClick={() => fileRef.current.click()}>
+                            Excel Import
+                        </Button>
+                        <input ref={fileRef} type="file" accept=".xlsx,.xls,.csv" hidden onChange={handleFile} />
+                    </>
+                )}
+                <Button variant="outline" icon={Upload} onClick={onExport}>
+                    Excel Export
+                </Button>
+            </div>
         </div>
     );
 }

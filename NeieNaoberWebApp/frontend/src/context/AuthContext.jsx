@@ -1,38 +1,41 @@
 import { createContext, useContext, useEffect, useState } from "react";
-import { api, setUnauthorizedHandler } from "../services/ApiClient";
+import { api, setUnauthorizedHandler } from "../services/api";
 
 const AuthContext = createContext(null);
 
 export function AuthProvider({ children }) {
     const [user, setUser] = useState(null);
-    const [loading, setLoading] = useState(true);
+    const [checking, setChecking] = useState(true);
 
-    // Na verversen van de pagina is de sessie-cookie er nog; vraag Laravel wie er ingelogd is
+    // Na het herladen van de pagina: is er nog een sessie bij de backend?
     useEffect(() => {
         setUnauthorizedHandler(() => setUser(null));
-
-        api.get("/api/ik")
-            .then((response) => setUser(response.data))
+        api.get("/api/user")
+            .then(setUser)
             .catch(() => setUser(null))
-            .finally(() => setLoading(false));
+            .finally(() => setChecking(false));
     }, []);
 
-    const login = async (email, wachtwoord) => {
-        const response = await api.post("/api/login", { email, wachtwoord });
-        setUser(response.data);
-        return response.data;
-    };
-
-    const logout = async () => {
+    // Geeft de gebruiker terug, of null bij verkeerde inloggegevens
+    const login = async (email, password) => {
         try {
-            await api.post("/api/logout");
-        } finally {
-            setUser(null);
+            const found = await api.post("/api/login", { email: email.trim(), password });
+            setUser(found);
+            return found;
+        } catch (err) {
+            if (err.status === 422) return null;
+            throw err;
         }
     };
 
-    return <AuthContext.Provider value={{ user, loading, login, logout }}>{children}</AuthContext.Provider>;
+    const logout = () => {
+        setUser(null);
+        api.post("/api/logout").catch(() => {});
+    };
+
+    if (checking) return null;
+
+    return <AuthContext.Provider value={{ user, login, logout }}>{children}</AuthContext.Provider>;
 }
 
-// eslint-disable-next-line react-refresh/only-export-components
 export const useAuth = () => useContext(AuthContext);
