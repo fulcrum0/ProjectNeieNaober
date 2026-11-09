@@ -1,5 +1,6 @@
 import { spawn, spawnSync } from 'node:child_process';
 import { copyFileSync, existsSync, readFileSync, statSync, writeFileSync } from 'node:fs';
+import { createServer } from 'node:net';
 import { dirname, join } from 'node:path';
 import { fileURLToPath } from 'node:url';
 
@@ -397,8 +398,43 @@ async function Check()
     process.exit(resultaten.some((r) => !r.goed) ? 1 : 0);
 }
 
-function Dev()
+// Een oude "npm run dev" die nog draait houdt de poorten bezet; dan liever meteen stoppen met uitleg
+function PoortVrij(poort)
 {
+    return new Promise((klaar) =>
+    {
+        const test = createServer()
+            .once('error', () => klaar(false))
+            .once('listening', () => test.close(() => klaar(true)))
+            .listen(poort, '127.0.0.1');
+    });
+}
+
+async function ControleerPoorten()
+{
+    Kop('Poorten controleren');
+    const bezet = [];
+
+    for (const poort of [BACKEND_POORT, 5173])
+    {
+        if (!(await PoortVrij(poort)))
+        {
+            bezet.push(poort);
+        }
+    }
+
+    if (bezet.length > 0)
+    {
+        Stop(`Poort ${bezet.join(' en ')} is al in gebruik (er draait nog een oude "npm run dev")`,
+            'Stop die met Ctrl+C, of draai: kill -9 $(lsof -ti :5173-5199) $(lsof -ti :8000)');
+    }
+
+    Goed(`Poorten ${BACKEND_POORT} en 5173 zijn vrij`);
+}
+
+async function Dev()
+{
+    await ControleerPoorten();
     ControleerGereedschap();
     SetupBackend();
     SetupFrontend();
@@ -410,7 +446,7 @@ function Dev()
 
     const processen = [
         ['backend ', KLEUR.geel, StartBackend(BACKEND_POORT)],
-        ['frontend', KLEUR.blauw, spawn('npm', ['run', 'dev'], { cwd: FRONTEND, stdio: 'pipe', shell: process.platform === 'win32' })],
+        ['frontend', KLEUR.blauw, spawn('npm', ['run', 'dev', '--', '--strictPort'], { cwd: FRONTEND, stdio: 'pipe', shell: process.platform === 'win32' })],
     ];
 
     for (const [naam, kleur, proces] of processen)
@@ -455,7 +491,7 @@ switch (opdracht)
         await Check();
         break;
     case 'dev':
-        Dev();
+        await Dev();
         break;
     case 'reset':
         Reset();
