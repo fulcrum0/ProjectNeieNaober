@@ -5,6 +5,7 @@ import SelectableTable from "../lists/SelectableTable";
 import OrganisationRow from "./OrganisationRow";
 import { useData } from "../../context/DataContext";
 import { useSelection } from "../../hooks/useSelection";
+import { usePagination } from "../../hooks/usePagination";
 import { filterList } from "../../helpers/filterList";
 import { exportToExcel } from "../../helpers/exportExcel";
 import { organisationToRow, rowToOrganisation } from "../../helpers/excelMappers";
@@ -18,6 +19,7 @@ export default function OrganisationTable() {
     const [query, setQuery] = useState("");
     const visible = filterList(organisations, query, (o) => [o.name, o.location]);
     const selection = useSelection(visible);
+    const pagination = usePagination(visible);
 
     const count = (id) => volunteers.filter((v) => v.orgId === id).length;
 
@@ -37,14 +39,18 @@ export default function OrganisationTable() {
             <ListToolbar
                 placeholder="Zoek organisatie"
                 query={query}
-                onQuery={setQuery}
+                onQuery={(q) => {
+                    setQuery(q);
+                    pagination.reset();
+                }}
                 onExport={() => setExportOpen(true)}
                 onImport={(rows) => importOrganisations(rows.map(rowToOrganisation))}
             />
             <SelectableTable
                 columns={COLUMNS}
-                items={visible}
+                items={pagination.pageItems}
                 selection={selection}
+                singleLine
                 renderRow={(o) => (
                     <OrganisationRow
                         key={o.id}
@@ -57,9 +63,9 @@ export default function OrganisationTable() {
                 )}
             />
             <ListFooter
-                shown={visible.length}
-                total={organisations.length}
+                pagination={pagination}
                 noun="organisatie"
+                selected={selection.selected.length}
                 disabled={!selection.selected.length}
                 onDelete={() => remove(selection.selected)}
             />

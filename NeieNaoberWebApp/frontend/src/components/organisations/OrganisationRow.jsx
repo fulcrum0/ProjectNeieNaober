@@ -6,8 +6,8 @@ export default function OrganisationRow({ organisation: o, count, selected, onTo
             <td className="col-check">
                 <input type="checkbox" checked={selected} onChange={() => onToggle(o.id)} />
             </td>
-            <td className="strong">{o.name}</td>
-            <td>{o.location}</td>
+            <td className="strong" title={o.name}>{o.name}</td>
+            <td title={o.location}>{o.location}</td>
             <td>{count}</td>
             <td><Link className="link-btn" to={`/admin/organisaties/${o.id}`}>Aanpassen</Link></td>
             <td>

@@ -1,6 +1,6 @@
-export default function SelectableTable({ columns, items, selection, renderRow }) {
+export default function SelectableTable({ columns, items, selection, renderRow, singleLine = false }) {
     return (
-        <table className="table">
+        <table className={singleLine ? "table table--single-line" : "table"}>
             <thead>
                 <tr>
                     <th className="col-check">

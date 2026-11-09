@@ -9,10 +9,10 @@ export default function VolunteerRow({ volunteer: v, selected, onToggle, detailT
             <td className="col-check">
                 <input type="checkbox" checked={selected} onChange={() => onToggle(v.id)} />
             </td>
-            <td className="strong">{fullName(v)}</td>
-            <td>{v.email}</td>
+            <td className="strong" title={fullName(v)}>{fullName(v)}</td>
+            <td title={v.email}>{v.email}</td>
             <td>{formatDate(v.createdAt)}</td>
-            <td>{formatAddress(v)}</td>
+            <td title={formatAddress(v)}>{formatAddress(v)}</td>
             {showStatus && <td><StatusBadge volunteer={v} /></td>}
             <td><Link className="link-btn" to={detailTo}>Detail</Link></td>
             <td>

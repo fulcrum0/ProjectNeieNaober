@@ -5,6 +5,7 @@ import SelectableTable from "../lists/SelectableTable";
 import VolunteerRow from "./VolunteerRow";
 import { useData } from "../../context/DataContext";
 import { useSelection } from "../../hooks/useSelection";
+import { usePagination } from "../../hooks/usePagination";
 import { filterList } from "../../helpers/filterList";
 import { exportToExcel } from "../../helpers/exportExcel";
 import { volunteerToRow, rowToVolunteer } from "../../helpers/excelMappers";
@@ -18,6 +19,7 @@ export default function VolunteerTable({ volunteers, detailPath, onDelete, onImp
     const [query, setQuery] = useState("");
     const visible = filterList(volunteers, query, (v) => [fullName(v), v.email, formatAddress(v)]);
     const selection = useSelection(visible);
+    const pagination = usePagination(visible);
 
     const orgName = (id) => organisations.find((o) => o.id === id)?.name ?? "";
 
@@ -37,14 +39,18 @@ export default function VolunteerTable({ volunteers, detailPath, onDelete, onImp
             <ListToolbar
                 placeholder="Zoek vrijwilliger"
                 query={query}
-                onQuery={setQuery}
+                onQuery={(q) => {
+                    setQuery(q);
+                    pagination.reset();
+                }}
                 onExport={() => setExportOpen(true)}
                 onImport={onImport && ((rows) => onImport(rows.map(rowToVolunteer)))}
             />
             <SelectableTable
                 columns={columns}
-                items={visible}
+                items={pagination.pageItems}
                 selection={selection}
+                singleLine
                 renderRow={(v) => (
                     <VolunteerRow
                         key={v.id}
@@ -59,9 +65,9 @@ export default function VolunteerTable({ volunteers, detailPath, onDelete, onImp
                 )}
             />
             <ListFooter
-                shown={visible.length}
-                total={volunteers.length}
+                pagination={pagination}
                 noun="vrijwilligers"
+                selected={selection.selected.length}
                 disabled={!selection.selected.length}
                 onDelete={() => remove(selection.selected)}
             />
